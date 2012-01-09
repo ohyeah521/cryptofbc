@@ -2,43 +2,40 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-FBC_Dword CRC32::CalculateCRC32(char* A,FBC_Dword iLen)
+bool FBC_CRC32::CalculateCRC32(__in const char* p, 
+							   __in const FBC_Dword dwLen, 
+							   __in const FBC_Dword dwInitCRC,
+							   __in __out FBC_Dword* dwCRCValue
+)
 {
-	FBC_Dword dwValueOfCRC32=0;
-	if(iLen==0)
+	bool bRet = false;
+	FBC_Dword dwCRC = 0;
+	FBC_Dword dwLen_Inner = 0;
+	FBC_Byte* ptemp = NULL;
+
+	FBC_PROCESS_POINTER(p);
+
+	if ( dwLen == 0 )
 	{
-		return -1;
+		goto Exit0;
 	}
-	else
+	
+	ptemp = (FBC_Byte*)p;
+	dwCRC = dwInitCRC;
+	dwLen_Inner = dwLen;
+
+	do
 	{
-		/*__asm
-		{
-			pushad;
-			mov eax,iLen;
-			mov esi,A;
-Label1:
-			movzx ecx,byte PTR ds:[esi];
-			mov ebx,dwValueOfCRC32;
-			and ebx,0xFF;
-			xor ecx,ebx;
-			mov ecx,DWORD PTR ds:[ecx*4+dwCRC32Table];
-			mov ebx,dwValueOfCRC32;
-			shr ebx,8;
-			xor ecx,ebx;
-			mov dwValueOfCRC32,ecx;
-			inc esi;
-			dec eax;
-			jnz Label1;
-			popad;
-		}*/
-		do
-		{
-			dwValueOfCRC32 = dwCRC32Table[ FBC_Byte(*A) ^ ( dwValueOfCRC32 & 0xff ) ] ^ (dwValueOfCRC32 >> 8);
-			A++;
-			iLen--;
-		}while(iLen > 0);
-	}
-	return dwValueOfCRC32;
+		dwCRC = dwCRC32Table[ (*ptemp) ^ (dwCRC & 0xff) ] ^ 
+								(dwCRC >> 8);
+		ptemp++;
+		dwLen_Inner--;
+	}while(dwLen_Inner > 0);
+	
+	bRet = true;
+	*dwCRCValue = dwCRC;
+Exit0:
+	return bRet;
 }
 
 NAMESPACE_END

@@ -5,7 +5,7 @@ NAMESPACE_BEGIN(CryptoFBC)
 const int IDEA::BLOCKSIZE=64;
 const int IDEA::DEFAULT_KEYLENGTH=128;
 const int IDEA::ROUNDS=8;
-bool IDEA::inited=FALSE_FBC;
+bool IDEA::inited=FALSE;
 
 FBC_Word IDEA::E_SubKey[9][6]={0};
 FBC_Word IDEA::D_SubKey[9][6]={0};
@@ -52,7 +52,7 @@ void IDEA::SetKey(CipherDir dir,const FBC_Byte* UserKey)
 
 	memset_FBC(Encryption_Key,0,sizeof(Encryption_Key));
 	f_dir=dir;
-	if(inited==FALSE_FBC) /* generate Encryption Key 1 time */
+	if(inited==FALSE) /* generate Encryption Key 1 time */
 	{
 		for(i=0;i<8;i++)
 		{
@@ -85,7 +85,7 @@ void IDEA::SetKey(CipherDir dir,const FBC_Byte* UserKey)
 			}
 			//cout<<endl;
 		}
-		inited=TRUE_FBC;
+		inited=TRUE;
 	}
 	if(dir==DECRYPTION) //compute decryption subkeys
 	{

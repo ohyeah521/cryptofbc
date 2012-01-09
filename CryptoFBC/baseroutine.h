@@ -10,6 +10,7 @@ int strlen_FBC(char* str);
 char* strcpy_FBC(char* dst, char* src, const int size_of_dest);
 void* memset_FBC(void* s, int c, int n);
 void* memcpy_FBC(void* dst, const void* src, int n);
+void* memchr_FBC(const void* buf, int c, int count);
 
 class DwordAndBytes
 {
@@ -42,9 +43,19 @@ template <class T>
 inline void swap(T& a,T& b)
 {
 	T temp;
-	temp=a;
-	a=b;
-	b=temp;
+	temp = a;
+	a = b;
+	b = temp;
+}
+
+inline void ReverseDword(FBC_Dword& x, FBC_Dword& y)
+{
+	FBC_Dword z = 0;
+	z |= ( (x & 0xff) << 24 );
+	z |= ( (x & 0xff00) << 8 );
+	z |= ( (x & 0xff0000) >> 8 );
+	z |= ( (x & 0xff000000) >> 24 );
+	y = z;
 }
 
 struct Padding

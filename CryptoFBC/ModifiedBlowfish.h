@@ -16,8 +16,15 @@ class MODIFYBLOWFISH:public CIPHERBASE//<DWORD>
 		/* PBOX_var & SBOX_var store the values that after modified by Key */
 		FBC_Dword PBOX_var[18];
 		FBC_Dword SBOX_var[4][256];
-		static bool Inited;
+		bool Inited;
+		CipherDir enumLastDir;
+		FBC_Dword dwInitialVector[2];
 	public:
+		MODIFYBLOWFISH()
+		{
+			Inited = false;
+			enumLastDir = ENCRYPTION;
+		}
 		inline FBC_Dword mF(FBC_Dword x) const;
 		static const int BLOCKSIZE;
 		static const int ROUNDS;
@@ -36,8 +43,19 @@ class MODIFYBLOWFISH:public CIPHERBASE//<DWORD>
 		void ECB_Encryption(const FBC_Dword inblock[2],FBC_Dword outblock[2]) const;
 		void Reset()
 		{
-			Inited=FALSE_FBC;
+			Inited = false;
 		}
+		void SetIV(const char* strIV, int nLen);
+		bool CBC_Encryption(const char* pIn,
+							int nInLen,
+							char* pOut,
+							int* nOut
+						  );
+		bool CBC_Decryption(const char* pIn,
+							int nInLen,
+							char* pOut,
+							int* nOut
+							);
 };
 
 NAMESPACE_END

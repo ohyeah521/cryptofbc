@@ -91,7 +91,6 @@ const FBC_Byte DES::Loop_Table[16]={
 
 const int DES::ROUNDS=16;
 const int DES::BLOCKSIZE=8;
-bool DES::inited=FALSE_FBC;
 
 void DES::Transform(bool* Out, bool* In, const FBC_Byte* Table, int tablelen) const
 {
@@ -116,20 +115,16 @@ void DES::SetKey(CipherDir dir,const char keystring[8])
 	bool K[64];
 	bool *KL=&K[0], *KR=&K[28];
 
-	if(inited==FALSE_FBC)
+	BytesToBits(K,keystring,64);
+	Transform(K,K,PC1_table,56);
+	for(int i=0;i<ROUNDS;i++)
 	{
-		BytesToBits(K,keystring,64);
-		Transform(K,K,PC1_table,56);
-		for(int i=0;i<ROUNDS;i++)
-		{
-			RotateL(KL,28,Loop_Table[i]);
-			RotateL(KR,28,Loop_Table[i]);
-			Transform((bool*)(&DesSubKey[i]),K,PC2_table,48);
-		}
-		inited=TRUE_FBC;
+		RotateL(KL,28,Loop_Table[i]);
+		RotateL(KR,28,Loop_Table[i]);
+		Transform((bool*)(&DesSubKey[i]),K,PC2_table,48);
 	}
-	else
-	if(dir==DECRYPTION)
+	
+	if(dir == DECRYPTION)
 	{
 		bool temp[48];
 		for(int i=0;i<ROUNDS/2;i++)

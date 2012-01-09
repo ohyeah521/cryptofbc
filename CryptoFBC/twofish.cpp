@@ -157,7 +157,7 @@ FBC_Dword TWOFISH::Twofish_h(FBC_Dword X,FBC_Dword* L) const
      *      EF  5B  01  EF
      *      EF  01  EF  5B
 	 */
-	GF256 GF_MDS(0x69);
+	GF256 GF_MDS(0x169);
 
 	for(i=0;i<4;i++)
 	{

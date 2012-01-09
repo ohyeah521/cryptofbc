@@ -46,6 +46,15 @@ class SHA1:public DwordAndBytes
 			state[3]=0x10325476;
 			state[4]=0xc3d2e1f0;
 		}
+		SHA1(const FBC_Dword* lpCustom)
+		{
+			count[0] = count[ 1 ] = 0;
+			state[ 0 ] = lpCustom[ 0 ];
+			state[ 1 ] = lpCustom[ 1 ];
+			state[ 2 ] = lpCustom[ 2 ];
+			state[ 3 ] = lpCustom[ 3 ];
+			state[ 4 ] = lpCustom[ 4 ];
+		}
 		void SHA1_Update(FBC_Byte* szMessage, FBC_Dword dwLenOfM);
 		void SHA1_Final(FBC_Byte szDigest[20]);
 };
