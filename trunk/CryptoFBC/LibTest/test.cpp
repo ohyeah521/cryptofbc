@@ -15,17 +15,26 @@
 #include "../base64.h"
 #include "../sha1.h"
 #include "../crc32.h"
+#include "../base32.h"
+#include "../rc5.h"
+#include "../sha256.h"
 
 using namespace std;
 using namespace CryptoFBC;
 
-void Test_CRC32()
-{
-	CRC32 crc32test;
-	FBC_Dword dwX = 0;
+#ifdef _DEBUG
+#pragma comment(lib, "../Debug/CryptoFBC.lib")
+#else
+#pragma comment(lib, "../Release/CryptoFBC.lib")
+#endif
 
-	dwX = crc32test.CalculateCRC32("123456", lstrlen("123456"));
-}
+//void Test_CRC32()
+//{
+//	FBC_CRC32 crc32test;
+//	FBC_Dword dwX = 0;
+//
+//	dwX = crc32test.CalculateCRC32("123456", lstrlen("123456"));
+//}
 
 void Test_SHA1()
 {
@@ -47,7 +56,7 @@ void Test_Base64()
 	BYTE sztemp[19]={0x3d,0x2c,0x8e,0x61,0x6d,0x4f,0x0a,0x27,0x7d,0x1c,0x75,0x67,0x09,0x64,0x11,0x49,0x4e,0x35};
 	BYTE szSn[256]={0};
 	BYTE szOut[256]={0};
-	Base64 b641;
+	FBCBase64 b641;
 		
 	srand(GetTickCount());
 	while (wtemp%2==1)
@@ -68,7 +77,7 @@ void Test_Base64()
 		std::cout<<hex<<int(sztemp[i])<<" ";
 	}
 	std::cout<<endl;
-	b641.Base64Encode(sztemp,18,szSn);
+//	b641.Base64Encode(sztemp,18,szSn);
 	std::cout<<szSn<<endl;
 	b641.Base64Decode(szSn,24,szOut);
 	for (i=0;i<18;i++)
@@ -202,67 +211,277 @@ void IDEATest()
 	ideatest.ECB_Encryption(ideaout,ideain);
 }
 
+void Test_Base32()
+{
+	CBASE32 base32Inst;
+
+	char* scSource1 = "f";
+	char* scSource2 = "fo";
+	char* scSource3 = "foo";
+	char* scSource4 = "foob";
+	char* scSource5 = "fooba";
+	char* scSource6 = "foobar";
+	char* scDst = NULL;
+	int nDstLen = 0;
+	int nLen2 = 0;
+	bool bRet = FALSE;
+	char* scDecode = NULL;
+	char* szTest = "AAATEA3EAYDARCAKBJFT3DJRB7ZW09XY8NAPZWW3";
+
+	bRet = base32Inst.Base32Encode(scSource1, 
+								   strlen_FBC(scSource1),
+								   NULL,
+								   &nDstLen
+								  );
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	
+	scDst = new char[ nDstLen + 1 ];
+	FBC_PROCESS_POINTER(scDst);
+	memset_FBC(scDst, 0, nDstLen + 1);
+	bRet = base32Inst.Base32Encode(scSource1,
+								   strlen_FBC(scSource1),
+								   scDst,
+								   &nDstLen
+								  );
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	std::cout << scDst << endl;
+	delete[] scDst;
+
+	bRet = base32Inst.Base32Encode(scSource2, 
+		strlen_FBC(scSource2),
+		NULL,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	
+	scDst = new char[ nDstLen + 1 ];
+	FBC_PROCESS_POINTER(scDst);
+	memset_FBC(scDst, 0, nDstLen + 1);
+	bRet = base32Inst.Base32Encode(scSource2,
+		strlen_FBC(scSource2),
+		scDst,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	std::cout << scDst << endl;
+	delete[] scDst;
+
+	bRet = base32Inst.Base32Encode(scSource3, 
+		strlen_FBC(scSource3),
+		NULL,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	
+	scDst = new char[ nDstLen + 1 ];
+	FBC_PROCESS_POINTER(scDst);
+	memset_FBC(scDst, 0, nDstLen + 1);
+	bRet = base32Inst.Base32Encode(scSource3,
+		strlen_FBC(scSource3),
+		scDst,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	std::cout << scDst << endl;
+	delete[] scDst;
+
+	bRet = base32Inst.Base32Encode(scSource4, 
+		strlen_FBC(scSource4),
+		NULL,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	
+	scDst = new char[ nDstLen + 1 ];
+	FBC_PROCESS_POINTER(scDst);
+	memset_FBC(scDst, 0, nDstLen + 1);
+	bRet = base32Inst.Base32Encode(scSource4,
+		strlen_FBC(scSource4),
+		scDst,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	std::cout << scDst << endl;
+	delete[] scDst;
+
+	bRet = base32Inst.Base32Encode(scSource5, 
+		strlen_FBC(scSource5),
+		NULL,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	
+	scDst = new char[ nDstLen + 1 ];
+	FBC_PROCESS_POINTER(scDst);
+	memset_FBC(scDst, 0, nDstLen + 1);
+	bRet = base32Inst.Base32Encode(scSource5,
+		strlen_FBC(scSource5),
+		scDst,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	std::cout << scDst << endl;
+	delete[] scDst;
+
+	bRet = base32Inst.Base32Encode(scSource6, 
+		strlen_FBC(scSource6),
+		NULL,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	
+	scDst = new char[ nDstLen + 1 ];
+	FBC_PROCESS_POINTER(scDst);
+	memset_FBC(scDst, 0, nDstLen + 1);
+	bRet = base32Inst.Base32Encode(scSource6,
+		strlen_FBC(scSource6),
+		scDst,
+		&nDstLen
+		);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	std::cout << scDst << endl;
+	delete[] scDst;
+	
+	bRet = base32Inst.Base32Decode( szTest, 40, NULL, &nLen2 );
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	scDecode = new char[ nLen2 ];
+	FBC_PROCESS_POINTER(scDecode);
+	memset(scDecode, 0, nLen2);
+	bRet = base32Inst.Base32Decode(szTest, 40, scDecode, &nLen2);
+	if ( bRet == FALSE )
+	{
+		goto Exit0;
+	}
+	std::cout << scDecode << endl;
+	
+	base32Inst.Base32Encode(scDecode, nLen2, NULL, &nDstLen);
+	scDst = new char[nDstLen + 1];
+	memset(scDst, 0, nDstLen + 1);
+	base32Inst.Base32Encode(scDecode, nLen2, scDst, &nDstLen);
+	std::cout << scDst << endl;
+	delete[] scDecode;
+	delete[] scDst;
+	return;
+Exit0:
+	if ( scDecode )
+	{
+		delete[] scDecode;
+	}
+	if ( scDst )
+	{
+		delete[] scDst;
+	}
+	return;
+}
+
+void Test_Blowfish()
+{
+	BYTE szKey2[] = {
+		0x5F, 0xB0, 0x45, 0xA2, 0x94, 0x17, 0xD9, 0x16, 
+		0xC6, 0xC6, 0xA2, 0xFF, 0x06, 0x41, 0x82, 0xB7
+	};
+	FBC_Byte szKey1[] = {
+		0x24, 0xA6, 0x3D, 0xDE, 0x5B, 0xD3, 0xB3, 0x82, 
+		0x9C, 0x7E, 0x06, 0xF4, 0x08, 0x16, 0xAA, 0x07 
+	};
+	FBC_Byte szPlain[] = {
+		0xc2, 0xda, 0xd2, 0x74, 0xdf, 0x29, 0x01, 0x20,
+		0xce, 0x33, 0x68, 0x6f, 0x2b, 0xab, 0x1b, 0x08,
+		0xd5, 0xd1, 0xa8, 0x1d, 0x0d, 0x80, 0x7c, 0x65
+	};
+	FBC_Byte szTemp[25] = { 0 };
+	char szIV[ 8 ] = { 0 };
+	int nLen = 25;
+	BLOWFISH bfInst1;
+	BLOWFISH bfInst2;
+
+	bfInst1.SetKey(CIPHERBASE::DECRYPTION, szKey1, 16);
+	bfInst1.SetIV(szIV, 8);
+	bfInst1.CBC_Decryption2((char*)szPlain, 24, (char*)szTemp, &nLen);
+
+	nLen -= 8;
+	bfInst2.SetKey(CIPHERBASE::DECRYPTION, szKey2, 16);
+	bfInst2.SetIV(szIV, 8);
+	bfInst2.CBC_Decryption2((char*)(szTemp + 4), nLen, (char*)szTemp, &nLen);
+}
+
+void Test_RC5()
+{
+	RC5 rc5Inst;
+	FBC_Dword dwKey[2] = { 0, 0};
+	FBC_Dword dwPlain[2] = {0x019EED82, 0x26BAF7F3};
+	FBC_Dword dwCipher[2] = { 0, 0 };
+	FBC_Dword dwTemp[2] = { 0, 0 };
+
+	rc5Inst.SetKey(dwKey, 2);
+	rc5Inst.ECB_Decryption(dwPlain, 2, dwCipher, 2);
+	rc5Inst.ECB_Encryption(dwCipher, 2, dwTemp, 2);
+}
+
+void Test_SHA256()
+{
+	FBC_CLASS_SHA256 sha256Inst;
+	char* szMessage = "abc";
+	char* szMessage2 = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
+	FBC_Byte szHash[32] = { 0 };
+
+	sha256Inst.Update( (FBC_Byte*)szMessage2, strlen_FBC(szMessage2) );
+	sha256Inst.Final(szHash, 32);
+}
+
 void main()
 {
-	BLOWFISH blowfishtest;
-	
-	//FBC_Byte bkey[]="abcdefghijklmnopqrstuvwxyz";
-	FBC_Byte bkey[] = "DR34gg4@##$G%^&FUi)&@gfjuol7$%";
-	FBC_Byte bplain[]="BLOWFISH";
-	FBC_Dword dwin[2],dwout[2],plaintext[2];
-	
-	dwin[0]=0x424C4F57;
-	dwin[1]=0x46495348;
-
-	//DwordAndBytes dwab;
-	//dwab.BytesToDword(dwin,bplain,8);
-	
-	blowfishtest.SetKey(CIPHERBASE::ENCRYPTION,bkey,30);
-	blowfishtest.ECB_Encryption(dwin,dwout);
-	blowfishtest.SetKey(CIPHERBASE::DECRYPTION,bkey,30);
-	blowfishtest.ECB_Encryption(dwout,plaintext);
-
-	MD5 md5test;
-	FBC_Byte bin[]="BLOWFISHBLOWFISHBLOWFISHBLOWFISHBLOWFISHBLOWFISHBLOWFISHBLOWFISH";
-	md5test.MD5Update(bin,64);
-	
-	FBC_Byte* bhash=new BYTE[MD5::DigestSize];
-	md5test.MD5Final(bhash);
-	delete []bhash;
-
-	DES destest;
-	char deskey[]="avc_oier";
-	char desin[8]={0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08};
-	char desout[8];
-	char desplaintext[8];
-
-	//memset(deskey,0,8);
-	//memset(desin,0,8);
-
-	destest.SetKey(CIPHERBASE::ENCRYPTION,deskey);
-	destest.ECB_Encryption(desin,desout);
-	destest.SetKey(CIPHERBASE::DECRYPTION,deskey);
-	destest.ECB_Encryption(desout,desplaintext);
-
-	TEA teatest;
-	FBC_Dword teain[2]={0x12345678,0x11111111};
-	FBC_Dword teakey[4];
-	FBC_Dword teaout[2];
-
-	memset(teakey,0,sizeof(teakey));
-	memset(teaout,0,sizeof(teaout));
-
-	teatest.ECB_Encryption(teain,teaout,teakey);
-	teatest.ECB_Decryption(teaout,teaout,teakey);
-
-	Test_GF256();
-	FillLogArrays();
-	Twofish_test();
-	IDEATest();
-	Test_RC4();
-	Test_Para();
-	Test_Rijndael();
-	Test_Base64();
-	Test_SHA1();
-	Test_CRC32();
+	//Test_GF256();
+	//FillLogArrays();
+	//Twofish_test();
+	//IDEATest();
+	//Test_RC4();
+	//Test_Para();
+	//Test_Rijndael();
+	//Test_Base64();
+	//Test_SHA1();
+	////Test_CRC32();
+	//Test_Base32();
+	//Test_Blowfish();
+	//Test_RC5();
+	Test_SHA256();
 }

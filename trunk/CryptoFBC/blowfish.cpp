@@ -11,7 +11,7 @@ const FBC_Dword BLOWFISH::PBOX_init[18]={
 };
 
 const FBC_Dword BLOWFISH::SBOX_init[4][256]={
-	0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
+  0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
   0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
   0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,
   0x636920d8, 0x71574e69, 0xa458fea3, 0xf4933d7e,
@@ -271,14 +271,17 @@ const FBC_Dword BLOWFISH::SBOX_init[4][256]={
 
 const int BLOWFISH::BLOCKSIZE=8;
 const int BLOWFISH::ROUNDS=16;
-bool BLOWFISH::Inited=FALSE_FBC;
 
-void BLOWFISH::SetKey(CipherDir dir,const FBC_Byte* keystring,FBC_Word keylength)
+void BLOWFISH::SetKey(CipherDir dir, const FBC_Byte* keystring, FBC_Word keylength)
 {
-	unsigned i,j,k=0;
-	FBC_Dword dwtemp1,dwtempdata[2],dwdata[2]={0,0};
+	unsigned i = 0;
+	unsigned j = 0;
+	unsigned k = 0;
+	FBC_Dword dwtemp1 = 0;
+	FBC_Dword dwtempdata[2] = {0, 0};
+	FBC_Dword dwdata[2] = {0, 0};
 	
-	if(Inited==FALSE_FBC)
+	if(Inited == false)
 	{
 		memcpy_FBC(PBOX_var,PBOX_init,sizeof(PBOX_init));
 		memcpy_FBC(SBOX_var,SBOX_init,sizeof(SBOX_init));
@@ -295,9 +298,11 @@ void BLOWFISH::SetKey(CipherDir dir,const FBC_Byte* keystring,FBC_Word keylength
 		
 		for(i=0;i<ROUNDS+2;i+=2)
 		{
-			ECB_Encryption(dwdata,dwtempdata);
-			PBOX_var[i]=dwdata[0]=dwtempdata[0];
-			PBOX_var[i+1]=dwdata[1]=dwtempdata[1];
+			ECB_Encryption(dwdata, dwtempdata);
+			PBOX_var[ i ]		= dwtempdata[ 0 ];
+			PBOX_var[ i + 1 ]	= dwtempdata[ 1 ];
+			dwdata[ 0 ]			= dwtempdata[ 0 ];
+			dwdata[ 1 ]			= dwtempdata[ 1 ];
 		}
 		
 		for(i=0;i<4;i++)
@@ -305,19 +310,22 @@ void BLOWFISH::SetKey(CipherDir dir,const FBC_Byte* keystring,FBC_Word keylength
 			for(j=0;j<256;j+=2)
 			{
 				ECB_Encryption(dwdata,dwtempdata);
-				SBOX_var[i][j]=dwdata[0]=dwtempdata[0];
-				SBOX_var[i][j+1]=dwdata[1]=dwtempdata[1];
+				SBOX_var[i][j]		= dwtempdata[ 0 ];
+				SBOX_var[i][j+1]	= dwtempdata[ 1 ];
+				dwdata[ 0 ]			= dwtempdata[ 0 ];
+				dwdata[ 1 ]			= dwtempdata[ 1 ];
 			}
 		}
-		Inited=TRUE_FBC;
+		Inited = true;
 	}
 		
-	if(dir==DECRYPTION)
+	if ( dir != enumLastDir )
 	{
 		for(i=0;i<(ROUNDS+2)/2;i++)
 		{
 			swap(PBOX_var[i],PBOX_var[ROUNDS+1-i]);
 		}
+		enumLastDir = dir;
 	}
 }
 
@@ -363,9 +371,247 @@ void BLOWFISH::ECB_Encryption(const FBC_Dword inblock[2],FBC_Dword outblock[2]) 
 	outblock[1]=dwRight;
 }
 
-void BLOWFISH::Reset()
+void BLOWFISH::SetIV(const char* strIV, int nLen)
 {
-	Inited = FALSE_FBC;
+	int i = 0;
+	int n = 0;
+	char* p = (char*)&dwInitialVector;
+
+	n = (nLen > 8) ? 8 : nLen;
+
+	memset_FBC((char*)&dwInitialVector, 0, 8);
+
+	for ( i = 0; i < n; i++ )
+	{
+		p[ i ] = strIV[ i ];
+	}
+}
+
+bool BLOWFISH::CBC_Encryption(const char* pIn, 
+									int nInLen, 
+									char* pOut, 
+									int* nOut 
+									)
+{
+	FBC_Dword dwLoopVar = 0;
+	FBC_Dword dwLen = 0;
+	FBC_Dword* pdwIn = NULL;
+	FBC_Dword* pdwOut = NULL;
+	FBC_Dword dwTemp[ 2 ] = { 0 };
+	FBC_Dword dwResult[ 2 ] = { 0 };
+
+	FBC_PROCESS_POINTER(pIn);
+	FBC_PROCESS_POINTER(nOut);
+	if ( nInLen <= 0 )
+	{
+		goto Exit0;
+	}
+	if ( pOut == NULL )
+	{
+		dwLen = FBC_Dword(nInLen) & 7;
+		if ( dwLen == 0 )
+		{
+			*nOut = nInLen;
+		}
+		else
+		{
+			*nOut = nInLen + FBC_Dword( 8 - dwLen );
+		}
+		goto Exit1;
+	}
+	if ( *nOut <= 0 )
+	{
+		goto Exit0;
+	}
+
+	dwLen = FBC_Dword(nInLen) & 7;
+	if ( dwLen == 0 )
+	{
+		dwLen = nInLen;
+	}
+	else
+	{
+		dwLen = nInLen + FBC_Dword( 8 - dwLen );
+	}
+	if ( FBC_Dword(*nOut) < dwLen )
+	{
+		goto Exit0;
+	}
+
+	pdwIn = new FBC_Dword[dwLen >> 2];
+	FBC_PROCESS_POINTER(pdwIn);
+	memset_FBC(pdwIn, 0, dwLen);
+	memcpy_FBC((char*)pdwIn, pIn, nInLen);
+	pdwOut = (FBC_Dword*)pOut;
+	dwTemp[ 0 ] = dwInitialVector[ 0 ];
+	dwTemp[ 1 ] = dwInitialVector[ 1 ];
+	
+	for ( dwLoopVar = 0; dwLoopVar < ( dwLen >> 2 ); dwLoopVar += 2 )
+	{
+		dwResult[ 0 ] = pdwIn[ dwLoopVar ] ^ dwTemp[ 0 ];
+		dwResult[ 1 ] = pdwIn[ dwLoopVar + 1 ] ^ dwTemp[ 1 ];
+		ECB_Encryption(dwResult, &pdwOut[ dwLoopVar ]);
+		dwTemp[ 0 ] = pdwOut[ dwLoopVar ];
+		dwTemp[ 1 ] = pdwOut[ dwLoopVar + 1];
+	}
+	*nOut = dwLen;
+Exit1:
+	delete[] pdwIn;
+	return true;
+Exit0:
+	return false;
+}
+
+bool BLOWFISH::CBC_Decryption(const char* pIn, 
+									int nInLen, 
+									char* pOut, 
+									int* nOut 
+									)
+{
+	FBC_Dword dwLen = 0;
+	FBC_Dword dwLoopVar = 0;
+	FBC_Dword dwTemp[ 2 ] = { 0 };
+	FBC_Dword* pdwIn = NULL;
+	FBC_Dword* pdwOut = NULL;
+
+	FBC_PROCESS_POINTER(pIn);
+	FBC_PROCESS_POINTER(nOut);
+	if ( nInLen <= 0 )
+	{
+		goto Exit0;
+	}
+	if ( pOut == NULL )
+	{
+		dwLen = FBC_Dword(nInLen) & 7;
+		if ( dwLen == 0 )
+		{
+			*nOut = nInLen;
+		}
+		else
+		{
+			*nOut = nInLen + FBC_Dword( 8 - dwLen );
+		}
+		goto Exit1;
+	}
+	if ( *nOut <= 0 )
+	{
+		goto Exit0;
+	}
+
+	dwLen = FBC_Dword(nInLen) & 7;
+	if ( dwLen == 0 )
+	{
+		dwLen = nInLen;
+	}
+	else
+	{
+		dwLen = nInLen + FBC_Dword( 8 - dwLen );
+	}
+	if ( FBC_Dword(*nOut) < dwLen )
+	{
+		goto Exit0;
+	}
+
+	pdwIn = new FBC_Dword[dwLen >> 2];
+	FBC_PROCESS_POINTER(pdwIn);
+	memset_FBC(pdwIn, 0, dwLen);
+	memcpy_FBC((char*)pdwIn, pIn, nInLen);
+	pdwOut = (FBC_Dword*)pOut;
+	dwTemp[ 0 ] = dwInitialVector[ 0 ];
+	dwTemp[ 1 ] = dwInitialVector[ 1 ];
+	
+	for ( dwLoopVar = 0; dwLoopVar < ( dwLen >> 2 ); dwLoopVar += 2 )
+	{
+		ECB_Encryption( &pdwIn[ dwLoopVar ], &pdwOut[ dwLoopVar ] );
+		pdwOut[ dwLoopVar ] ^= dwTemp[ 0 ];
+		pdwOut[ dwLoopVar + 1 ] ^= dwTemp[ 1 ];
+		dwTemp[ 0 ] = pdwIn[ dwLoopVar ];
+		dwTemp[ 1 ] = pdwIn[ dwLoopVar + 1 ];
+	}
+	*nOut = dwLen;
+Exit1:
+	delete[] pdwIn;
+	return true;
+Exit0:
+	return false;
+}
+
+bool BLOWFISH::CBC_Decryption2(const char* pIn, 
+							  int nInLen, 
+							  char* pOut, 
+							  int* nOut 
+)
+{
+	FBC_Dword dwLen = 0;
+	FBC_Dword dwLoopVar = 0;
+	FBC_Dword dwTemp[ 2 ] = { 0 };
+	FBC_Dword* pdwIn = NULL;
+	FBC_Dword* pdwOut = NULL;
+
+	FBC_PROCESS_POINTER(pIn);
+	FBC_PROCESS_POINTER(nOut);
+	if ( nInLen <= 0 )
+	{
+		goto Exit0;
+	}
+	if ( pOut == NULL )
+	{
+		dwLen = FBC_Dword(nInLen) & 7;
+		if ( dwLen == 0 )
+		{
+			*nOut = nInLen;
+		}
+		else
+		{
+			*nOut = nInLen + FBC_Dword( 8 - dwLen );
+		}
+		goto Exit1;
+	}
+	if ( *nOut <= 0 )
+	{
+		goto Exit0;
+	}
+
+	dwLen = FBC_Dword(nInLen) & 7;
+	if ( dwLen == 0 )
+	{
+		dwLen = nInLen;
+	}
+	else
+	{
+		dwLen = nInLen + FBC_Dword( 8 - dwLen );
+	}
+	if ( FBC_Dword(*nOut) < dwLen )
+	{
+		goto Exit0;
+	}
+
+	pdwIn = new FBC_Dword[dwLen >> 2];
+	FBC_PROCESS_POINTER(pdwIn);
+	memset_FBC(pdwIn, 0, dwLen);
+	memcpy_FBC((char*)pdwIn, pIn, nInLen);
+	pdwOut = (FBC_Dword*)pOut;
+	dwTemp[ 0 ] = dwInitialVector[ 0 ];
+	dwTemp[ 1 ] = dwInitialVector[ 1 ];
+
+	for ( dwLoopVar = 0; dwLoopVar < ( dwLen >> 2 ); dwLoopVar += 2 )
+	{
+		ReverseDword(pdwIn[dwLoopVar], pdwIn[dwLoopVar]);
+		ReverseDword(pdwIn[dwLoopVar + 1], pdwIn[dwLoopVar + 1]);
+		ECB_Encryption( &pdwIn[ dwLoopVar ], &pdwOut[ dwLoopVar ] );
+		pdwOut[ dwLoopVar ] ^= dwTemp[ 0 ];
+		pdwOut[ dwLoopVar + 1 ] ^= dwTemp[ 1 ];
+		ReverseDword(pdwOut[ dwLoopVar ], pdwOut[ dwLoopVar ]);
+		ReverseDword(pdwOut[ dwLoopVar + 1 ], pdwOut[ dwLoopVar + 1 ]);
+		dwTemp[ 0 ] = pdwIn[ dwLoopVar ];
+		dwTemp[ 1 ] = pdwIn[ dwLoopVar + 1 ];
+	}
+	*nOut = dwLen;
+Exit1:
+	delete[] pdwIn;
+	return true;
+Exit0:
+	return false;
 }
 
 NAMESPACE_END

@@ -16,8 +16,15 @@ class BLOWFISH:public CIPHERBASE//<DWORD>
 		/* PBOX_var & SBOX_var store the values that after modified by Key */
 		FBC_Dword PBOX_var[18];
 		FBC_Dword SBOX_var[4][256];
-		static bool Inited;
+		bool Inited;
+		CipherDir enumLastDir;
+		FBC_Dword dwInitialVector[2];
 	public:
+		BLOWFISH()
+		{
+			Inited = false;
+			enumLastDir = ENCRYPTION;
+		}
 		inline FBC_Dword F_Blow(FBC_Dword x) const;
 		static const int BLOCKSIZE;
 		static const int ROUNDS;
@@ -33,8 +40,31 @@ class BLOWFISH:public CIPHERBASE//<DWORD>
 		 * outblock[0]:0x324ed0fe     outblock[1]=0xf413a203
 		 * In other word, this is called "Little Endian"
 		 */
+		void SetKey(CipherDir dir, const char* keyString, FBC_Word keyLength)
+		{
+			SetKey(dir, (FBC_Byte*)keyString, keyLength);
+		}
 		void ECB_Encryption(const FBC_Dword inblock[2],FBC_Dword outblock[2]) const;
-		void Reset();
+		void Reset()
+		{
+			Inited = false;
+		}
+		void SetIV(const char* strIV, int nLen);
+		bool CBC_Encryption(const char* pIn,
+							int nInLen,
+							char* pOut,
+							int* nOut
+							);
+		bool CBC_Decryption(const char* pIn,
+							int nInLen,
+							char* pOut,
+							int* nOut
+							);
+		bool CBC_Decryption2(const char* pIn,
+							 int nInLen,
+							 char* pOut,
+							 int* nOut
+							 );
 };
 
 NAMESPACE_END

@@ -1,51 +1,94 @@
+/********************************************************************
+	created:	2011/03/13   18:18
+	file base:	base64.cpp
+	author:		cnbragon@gmail.com
+	purpose:	
+*********************************************************************/
+
 #include "base64.h"
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-int Base64::Base64Encode(const FBC_Byte* input,const int inputLen,FBC_Byte* output)
+bool FBCBase64::Base64Encode(const FBC_Byte* pin, 
+							const int inLen, 
+							FBC_Byte* pout,
+							int* outLen)
 {
-	int iLen=0;
-	int inLen=inputLen;
-
-	while(inLen>0)
+	bool bRet = false;
+	int nOutNeedLen = 0;
+	FBC_Byte* pTemp = NULL;
+	FBC_Byte* pBuffer = NULL;
+	int cbin = inLen;
+	
+	FBC_PROCESS_POINTER(pin);
+	if ( inLen <= 0 )
 	{
-		output[0]=base64_alphabet[FBC_Byte((input[0]>>2)&0x3F)];
-		if(inLen>2)
+		goto Exit0;
+	}
+	nOutNeedLen = GetEncodedSize(inLen);
+	if ( pout == NULL			||
+		 *outLen < nOutNeedLen
+	)
+	{
+		*outLen = nOutNeedLen;
+		goto Exit0;
+	}
+	
+	pBuffer = new FBC_Byte[nOutNeedLen];
+	FBC_PROCESS_POINTER(pBuffer);
+
+	memset_FBC(pBuffer, 0, nOutNeedLen);
+	pTemp = pBuffer;
+	
+	*outLen = 0;
+	while(cbin > 0)
+	{
+		pTemp[0] = base64_alphabet[ FBC_Byte( ( pin[0] >> 2 ) & 0x3F ) ];
+		if(cbin > 2)
 		{
-			output[0]=base64_alphabet[FBC_Byte((input[0]>>2)&0x3F)];
-			output[1]=base64_alphabet[FBC_Byte(((input[0]&3)<<4)|(input[1]>>4))];
-			output[2]=base64_alphabet[FBC_Byte(((input[1]&0x0F)<<2)|(input[2]>>6))];
-			output[3]=base64_alphabet[FBC_Byte(input[2]&0x3F)];
+			pTemp[0] = base64_alphabet[ FBC_Byte( (pin[0] >> 2 ) & 0x3F ) ];
+			pTemp[1] = base64_alphabet[ FBC_Byte( ( (pin[0] & 3) <<4 ) | (pin[1] >> 4 ))];
+			pTemp[2] = base64_alphabet[ FBC_Byte( ( (pin[1] & 0x0F ) << 2 ) | (pin[2] >> 6))];
+			pTemp[3] = base64_alphabet[ FBC_Byte( pin[2] & 0x3F ) ];
 		}
 		else
 		{
-			switch(inLen)
+			switch(cbin)
 			{
 			case 1:
 				{
-					output[1]=base64_alphabet[FBC_Byte((input[0]&3)<<4)];
-					output[2]='=';
-					output[3]='=';
+					pTemp[1]=base64_alphabet[FBC_Byte((pin[0]&3)<<4)];
+					pTemp[2]='=';
+					pTemp[3]='=';
 				}
 				break;
 			case 2:
 				{
-					output[1]=base64_alphabet[FBC_Byte(((input[0]&3)<<4)|(input[1]>>4))];
-					output[2]=base64_alphabet[FBC_Byte((input[1]&0x0F)<<2)];
-					output[3]='=';
+					pTemp[1]=base64_alphabet[FBC_Byte(((pin[0]&3)<<4)|(pin[1]>>4))];
+					pTemp[2]=base64_alphabet[FBC_Byte((pin[1]&0x0F)<<2)];
+					pTemp[3]='=';
 				}
 				break;
 			}
 		}
-		output+=4;
-		input+=3;
-		inLen-=3;
-		iLen+=4;
+		pTemp += 4;
+		pin += 3;
+		cbin -= 3;
+		*outLen += 4;
 	}
-	return iLen;
+	
+	memcpy_FBC(pout, pBuffer, *outLen);
+	bRet = true;
+Exit0:
+	if ( pBuffer )
+	{
+		delete[] pBuffer;
+		pBuffer = NULL;
+	}
+	return bRet;
 }
 
-char Base64::GetBase64Value(char ch)
+char FBCBase64::GetBase64Value(char ch)
 {
 	char index=-1;
 
@@ -78,7 +121,7 @@ char Base64::GetBase64Value(char ch)
 	return index;
 }
 
-int Base64::Base64Decode(const FBC_Byte* input,const int inputLen,FBC_Byte* output)
+int FBCBase64::Base64Decode(const FBC_Byte* input,const int inputLen,FBC_Byte* output)
 {
 	int iLen=0;
 	int inLen=inputLen;
@@ -86,7 +129,7 @@ int Base64::Base64Decode(const FBC_Byte* input,const int inputLen,FBC_Byte* outp
 
 	if(inLen%4)
 	{
-		return FALSE_FBC;
+		return FALSE;
 	}
 
 	while(inLen>0)
@@ -106,6 +149,18 @@ int Base64::Base64Decode(const FBC_Byte* input,const int inputLen,FBC_Byte* outp
 		iLen+=3;
 	}
 	return iLen;
+}
+
+int FBCBase64::GetEncodedSize(int nLen)
+{
+	if ( ( nLen % 3 ) == 0 )
+	{
+		return ( nLen / 3 ) * 4;
+	}
+	else
+	{
+		return ( ( nLen / 3 ) + 1 ) * 4;
+	}
 }
 
 NAMESPACE_END

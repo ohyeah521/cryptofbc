@@ -26,7 +26,7 @@ class DES:public CIPHERBASE,public Padding,public BytesAndBits
 		/* Number Of Left Shifts each iteration */
 		static const FBC_Byte Loop_Table[16];
 		bool DesSubKey[16][48];
-		static bool inited;
+		//bool inited;
 	public:
 		static const int BLOCKSIZE;
 		static const int ROUNDS;

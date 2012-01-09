@@ -11,7 +11,7 @@ class GF256
 {
 	public:
 		typedef FBC_Byte Element;
-		GF256(FBC_Byte A):gf256_modulus(A){}
+		GF256(FBC_Word A):gf256_modulus(A){}
 		Element GF256_Add(Element a,Element b) const;
 		Element GF256_Subtract(Element a,Element b) const;
 		/* this is common way to calculate Multiplier over GF(2^n)

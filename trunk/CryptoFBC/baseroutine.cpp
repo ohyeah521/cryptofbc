@@ -23,8 +23,14 @@ char* strcpy_FBC(char* dst, char* src, const int size_of_dest)
 	char* szTempSrc = src;
 	int n = size_of_dest;
 
-	for (; ((*dst = *szTempSrc) != '\0') && ( n >= 0 ); ++dst, ++szTempSrc, --n)
-	
+	while( ( n >= 0 ) && ( (*dst = *szTempSrc) != '\0' ) )
+	{
+		dst++;
+		szTempSrc++;
+		n--;
+	}
+	//for (; ((*dst = *szTempSrc) != '\0') && ( n >= 0 ); ++dst, ++szTempSrc, --n)
+
 	return save;
 }
 
@@ -52,6 +58,27 @@ void* memcpy_FBC(void* dst, const void* src, int n)
 	}
 
 	return dst;
+}
+
+void* memchr_FBC(const void* buf, int c, int count)
+{
+	char* p = (char*)buf;
+	char* pIndex = NULL;
+
+	while ( count > 0 )
+	{
+		if ( *p == c )
+		{
+			pIndex = p;
+			break;
+		}
+		else
+		{
+			p++;
+			count--;
+		}
+	}
+	return pIndex;
 }
 
 /* 0x12345678 in memory 78 56 34 12 */
@@ -122,7 +149,7 @@ void TrimString::TrimLeft(char* A)
 		{
 			if ( iLen == 1 )
 			{
-				A = NULL_FBC;
+				A = NULL;
 			} 
 			else
 			{

@@ -40,10 +40,15 @@ static const FBC_Dword dwCRC32Table[]={
     0xb3667a2e,0xc4614ab8,0x5d681b02,0x2a6f2b94,0xb40bbe37,0xc30c8ea1,0x5a05df1b,0x2d02ef8d
 };
 
-class CRC32
+class FBC_CRC32
 {
 public:
-	FBC_Dword CalculateCRC32(char* A,FBC_Dword iLen);
+	bool FBC_CRC32::CalculateCRC32(
+		__in const char* p, 
+		__in const FBC_Dword dwLen, 
+		__in const FBC_Dword dwInitCRC,
+		__in __out FBC_Dword* dwCRCValue
+		);
 };
 NAMESPACE_END
 
