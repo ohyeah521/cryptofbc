@@ -1,15 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryptoFBC", "CryptoFBC.vcproj", "{AFCE2422-92DB-4C51-9014-030A43B0E7C0}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibTest", "LibTest\LibTest.vcproj", "{B8D0B831-59A2-4630-A207-F7AFCD9E4BCD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestVectors", "TestVectors\TestVectors.vcproj", "{00171280-7929-40B4-AAF4-D0DF20F57672}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "idearef", "idearef\idearef.vcproj", "{0903C390-2BA0-4010-A189-F981917956F0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "twofishref", "twofishref\twofishref.vcproj", "{440A6404-3EF9-47FE-8909-79D34E31686C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibTest", "LibTest\LibTest.vcproj", "{457E499C-39EA-4138-AC6D-CF14C2D6EF80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		{AFCE2422-92DB-4C51-9014-030A43B0E7C0}.Debug|Win32.Build.0 = Debug|Win32
 		{AFCE2422-92DB-4C51-9014-030A43B0E7C0}.Release|Win32.ActiveCfg = Release|Win32
 		{AFCE2422-92DB-4C51-9014-030A43B0E7C0}.Release|Win32.Build.0 = Release|Win32
-		{B8D0B831-59A2-4630-A207-F7AFCD9E4BCD}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B8D0B831-59A2-4630-A207-F7AFCD9E4BCD}.Debug|Win32.Build.0 = Debug|Win32
-		{B8D0B831-59A2-4630-A207-F7AFCD9E4BCD}.Release|Win32.ActiveCfg = Release|Win32
-		{B8D0B831-59A2-4630-A207-F7AFCD9E4BCD}.Release|Win32.Build.0 = Release|Win32
 		{00171280-7929-40B4-AAF4-D0DF20F57672}.Debug|Win32.ActiveCfg = Debug|Win32
 		{00171280-7929-40B4-AAF4-D0DF20F57672}.Debug|Win32.Build.0 = Debug|Win32
 		{00171280-7929-40B4-AAF4-D0DF20F57672}.Release|Win32.ActiveCfg = Release|Win32
@@ -37,6 +33,10 @@ Global
 		{440A6404-3EF9-47FE-8909-79D34E31686C}.Debug|Win32.Build.0 = Debug|Win32
 		{440A6404-3EF9-47FE-8909-79D34E31686C}.Release|Win32.ActiveCfg = Release|Win32
 		{440A6404-3EF9-47FE-8909-79D34E31686C}.Release|Win32.Build.0 = Release|Win32
+		{457E499C-39EA-4138-AC6D-CF14C2D6EF80}.Debug|Win32.ActiveCfg = Debug|Win32
+		{457E499C-39EA-4138-AC6D-CF14C2D6EF80}.Debug|Win32.Build.0 = Debug|Win32
+		{457E499C-39EA-4138-AC6D-CF14C2D6EF80}.Release|Win32.ActiveCfg = Release|Win32
+		{457E499C-39EA-4138-AC6D-CF14C2D6EF80}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,12 +1,12 @@
-#include "rijndael.h"
+#include "aes.h"
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-const int RIJNDAEL::BLOCKSIZE=128;
-const int RIJNDAEL::DEFAULT_KEYLENGTH=128;
-const int RIJNDAEL::ROUNDS=10;
+const int FBC_AES::BLOCKSIZE=128;
+const int FBC_AES::DEFAULT_KEYLENGTH=128;
+const int FBC_AES::ROUNDS=10;
 
-const FBC_Dword RIJNDAEL::dwTe0[256]={
+const FBC_Dword FBC_AES::dwTe0[256]={
 	0xc66363a5, 0xf87c7c84, 0xee777799, 0xf67b7b8d,
     0xfff2f20d, 0xd66b6bbd, 0xde6f6fb1, 0x91c5c554,
     0x60303050, 0x02010103, 0xce6767a9, 0x562b2b7d,
@@ -73,7 +73,7 @@ const FBC_Dword RIJNDAEL::dwTe0[256]={
     0x7bb0b0cb, 0xa85454fc, 0x6dbbbbd6, 0x2c16163a
 };
 
-const FBC_Dword RIJNDAEL::dwTe1[256]={
+const FBC_Dword FBC_AES::dwTe1[256]={
 	0xa5c66363, 0x84f87c7c, 0x99ee7777, 0x8df67b7b,
     0x0dfff2f2, 0xbdd66b6b, 0xb1de6f6f, 0x5491c5c5,
     0x50603030, 0x03020101, 0xa9ce6767, 0x7d562b2b,
@@ -140,7 +140,7 @@ const FBC_Dword RIJNDAEL::dwTe1[256]={
     0xcb7bb0b0, 0xfca85454, 0xd66dbbbb, 0x3a2c1616
 };
 
-const FBC_Dword RIJNDAEL::dwTe2[256]={
+const FBC_Dword FBC_AES::dwTe2[256]={
 	0x63a5c663, 0x7c84f87c, 0x7799ee77, 0x7b8df67b,
     0xf20dfff2, 0x6bbdd66b, 0x6fb1de6f, 0xc55491c5,
     0x30506030, 0x01030201, 0x67a9ce67, 0x2b7d562b,
@@ -207,7 +207,7 @@ const FBC_Dword RIJNDAEL::dwTe2[256]={
     0xb0cb7bb0, 0x54fca854, 0xbbd66dbb, 0x163a2c16
 };
 
-const FBC_Dword RIJNDAEL::dwTe3[256]={
+const FBC_Dword FBC_AES::dwTe3[256]={
 	0x6363a5c6, 0x7c7c84f8, 0x777799ee, 0x7b7b8df6,
     0xf2f20dff, 0x6b6bbdd6, 0x6f6fb1de, 0xc5c55491,
     0x30305060, 0x01010302, 0x6767a9ce, 0x2b2b7d56,
@@ -274,7 +274,7 @@ const FBC_Dword RIJNDAEL::dwTe3[256]={
     0xb0b0cb7b, 0x5454fca8, 0xbbbbd66d, 0x16163a2c
 };
 
-const FBC_Dword RIJNDAEL::dwTe4[256]={
+const FBC_Dword FBC_AES::dwTe4[256]={
 	0x63636363, 0x7c7c7c7c, 0x77777777, 0x7b7b7b7b,
     0xf2f2f2f2, 0x6b6b6b6b, 0x6f6f6f6f, 0xc5c5c5c5,
     0x30303030, 0x01010101, 0x67676767, 0x2b2b2b2b,
@@ -341,7 +341,7 @@ const FBC_Dword RIJNDAEL::dwTe4[256]={
     0xb0b0b0b0, 0x54545454, 0xbbbbbbbb, 0x16161616
 };
 
-const FBC_Dword RIJNDAEL::dwTd0[256]={
+const FBC_Dword FBC_AES::dwTd0[256]={
 	0x51f4a750, 0x7e416553, 0x1a17a4c3, 0x3a275e96,
     0x3bab6bcb, 0x1f9d45f1, 0xacfa58ab, 0x4be30393,
     0x2030fa55, 0xad766df6, 0x88cc7691, 0xf5024c25,
@@ -408,7 +408,7 @@ const FBC_Dword RIJNDAEL::dwTd0[256]={
     0x7bcb8461, 0xd532b670, 0x486c5c74, 0xd0b85742
 };
 
-const FBC_Dword RIJNDAEL::dwTd1[256]={
+const FBC_Dword FBC_AES::dwTd1[256]={
 	0x5051f4a7, 0x537e4165, 0xc31a17a4, 0x963a275e,
     0xcb3bab6b, 0xf11f9d45, 0xabacfa58, 0x934be303,
     0x552030fa, 0xf6ad766d, 0x9188cc76, 0x25f5024c,
@@ -475,7 +475,7 @@ const FBC_Dword RIJNDAEL::dwTd1[256]={
     0x617bcb84, 0x70d532b6, 0x74486c5c, 0x42d0b857
 };
 
-const FBC_Dword RIJNDAEL::dwTd2[256]={
+const FBC_Dword FBC_AES::dwTd2[256]={
 	0xa75051f4, 0x65537e41, 0xa4c31a17, 0x5e963a27,
     0x6bcb3bab, 0x45f11f9d, 0x58abacfa, 0x03934be3,
     0xfa552030, 0x6df6ad76, 0x769188cc, 0x4c25f502,
@@ -542,7 +542,7 @@ const FBC_Dword RIJNDAEL::dwTd2[256]={
     0x84617bcb, 0xb670d532, 0x5c74486c, 0x5742d0b8
 };
 
-const FBC_Dword RIJNDAEL::dwTd3[256]={
+const FBC_Dword FBC_AES::dwTd3[256]={
 	0xf4a75051, 0x4165537e, 0x17a4c31a, 0x275e963a,
     0xab6bcb3b, 0x9d45f11f, 0xfa58abac, 0xe303934b,
     0x30fa5520, 0x766df6ad, 0xcc769188, 0x024c25f5,
@@ -609,7 +609,7 @@ const FBC_Dword RIJNDAEL::dwTd3[256]={
     0xcb84617b, 0x32b670d5, 0x6c5c7448, 0xb85742d0
 };
 
-const FBC_Dword RIJNDAEL::dwTd4[256]={
+const FBC_Dword FBC_AES::dwTd4[256]={
 	0x52525252, 0x09090909, 0x6a6a6a6a, 0xd5d5d5d5,
     0x30303030, 0x36363636, 0xa5a5a5a5, 0x38383838,
     0xbfbfbfbf, 0x40404040, 0xa3a3a3a3, 0x9e9e9e9e,
@@ -676,73 +676,136 @@ const FBC_Dword RIJNDAEL::dwTd4[256]={
     0x55555555, 0x21212121, 0x0c0c0c0c, 0x7d7d7d7d
 };
 
-const FBC_Dword RIJNDAEL::RCon[10]={
+const FBC_Dword FBC_AES::RCon[10]={
 	0x01000000, 0x02000000, 0x04000000, 0x08000000,
 	0x10000000, 0x20000000, 0x40000000, 0x80000000,
 	0x1B000000, 0x36000000
 };
 
-void RIJNDAEL::SetKey(CipherDir dir, const FBC_Dword dwKey[4])
+void FBC_AES::SetKey(CipherDir dir, const FBC_Dword dwKey[4])
 {
 	FBC_Dword dwTemp=0;
 	int i=0,j=0;
 
-	dwSubKey[0]=(aes_swap(dwKey[0])^aes_swap(dwKey[3]));
-	dwSubKey[1]=(aes_swap(dwKey[1])^aes_swap(dwKey[2]));
-	dwSubKey[2]=(aes_swap(dwKey[2])^aes_swap(dwKey[1]));
-	dwSubKey[3]=(aes_swap(dwKey[3])^aes_swap(dwKey[0]));
+	m_dwSubKey[0]=(aes_swap(dwKey[0])^aes_swap(dwKey[3]));
+	m_dwSubKey[1]=(aes_swap(dwKey[1])^aes_swap(dwKey[2]));
+	m_dwSubKey[2]=(aes_swap(dwKey[2])^aes_swap(dwKey[1]));
+	m_dwSubKey[3]=(aes_swap(dwKey[3])^aes_swap(dwKey[0]));
 
 	for(i=4;i<44;i+=4)
 	{
-		dwTemp=dwSubKey[i-1];
-		dwSubKey[i]=dwSubKey[i-4]                       \
+		dwTemp=m_dwSubKey[i-1];
+		m_dwSubKey[i]=m_dwSubKey[i-4]                       \
 			^dwTe4[ (dwTemp>>16) &0xFF ] & 0xFF00FF00   \
 			^dwTe4[ (dwTemp>>8)  &0xFF ] & 0x00FF00FF   \
 			^dwTe4[ (dwTemp)     &0xFF ] & 0xFF00FF00   \
 			^dwTe4[ (dwTemp>>24) &0xFF ] & 0x00FF00FF   \
 			^RCon[i/4-1];
-		dwSubKey[i+1]=dwSubKey[ i ]^dwSubKey[i-3];
-		dwSubKey[i+2]=dwSubKey[i+1]^dwSubKey[i-2];
-		dwSubKey[i+3]=dwSubKey[i+2]^dwSubKey[i-1];
+		m_dwSubKey[i+1]=m_dwSubKey[ i ]^m_dwSubKey[i-3];
+		m_dwSubKey[i+2]=m_dwSubKey[i+1]^m_dwSubKey[i-2];
+		m_dwSubKey[i+3]=m_dwSubKey[i+2]^m_dwSubKey[i-1];
 	}
 
 	if (dir==DECRYPTION)
 	{
 		for (j=40,i=0;i!=j;i+=4,j-=4)
 		{
-			swap(dwSubKey[i],dwSubKey[j]);
-			swap(dwSubKey[i+1],dwSubKey[j+1]);
-			swap(dwSubKey[i+2],dwSubKey[j+2]);
-			swap(dwSubKey[i+3],dwSubKey[j+3]);
+			swap(m_dwSubKey[i],m_dwSubKey[j]);
+			swap(m_dwSubKey[i+1],m_dwSubKey[j+1]);
+			swap(m_dwSubKey[i+2],m_dwSubKey[j+2]);
+			swap(m_dwSubKey[i+3],m_dwSubKey[j+3]);
 		}
 		
 		for (i=4;i<40;i+=4)
 		{
-			dwSubKey[i]=\
-				dwTd0[dwTe4[(dwSubKey[i]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(dwSubKey[i]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(dwSubKey[i]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(dwSubKey[i]    ) & 0xFF] & 0xFF ];
-			dwSubKey[i+1]=\
-				dwTd0[dwTe4[(dwSubKey[i+1]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(dwSubKey[i+1]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(dwSubKey[i+1]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(dwSubKey[i+1]    ) & 0xFF] & 0xFF ];
-			dwSubKey[i+2]=\
-				dwTd0[dwTe4[(dwSubKey[i+2]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(dwSubKey[i+2]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(dwSubKey[i+2]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(dwSubKey[i+2]    ) & 0xFF] & 0xFF ];
-			dwSubKey[i+3]=\
-				dwTd0[dwTe4[(dwSubKey[i+3]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(dwSubKey[i+3]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(dwSubKey[i+3]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(dwSubKey[i+3]    ) & 0xFF] & 0xFF ];
+			m_dwSubKey[i]=\
+				dwTd0[dwTe4[(m_dwSubKey[i]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwSubKey[i]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwSubKey[i]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwSubKey[i]    ) & 0xFF] & 0xFF ];
+			m_dwSubKey[i+1]=\
+				dwTd0[dwTe4[(m_dwSubKey[i+1]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwSubKey[i+1]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwSubKey[i+1]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwSubKey[i+1]    ) & 0xFF] & 0xFF ];
+			m_dwSubKey[i+2]=\
+				dwTd0[dwTe4[(m_dwSubKey[i+2]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwSubKey[i+2]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwSubKey[i+2]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwSubKey[i+2]    ) & 0xFF] & 0xFF ];
+			m_dwSubKey[i+3]=\
+				dwTd0[dwTe4[(m_dwSubKey[i+3]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwSubKey[i+3]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwSubKey[i+3]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwSubKey[i+3]    ) & 0xFF] & 0xFF ];
 		}
 	}
 }
 
-void RIJNDAEL::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
+bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir )
+{
+	bool bRet = false;
+    int i;
+    FBC_Dword dwtemp;
+
+	if ( !pkey )
+	{
+		goto Exit0;
+	}
+
+	switch ( keyBits )
+	{
+	case enumKeyBits_128:
+		m_nb = 4;
+		m_nk = 4;
+		m_nr = 10;
+		break;
+	case enumKeyBits_192:
+		m_nb = 4;
+		m_nk = 6;
+		m_nr = 12;
+		break;
+	case enumKeyBits_256:
+		m_nb = 4;
+		m_nk = 8;
+		m_nr = 14;
+		break;
+	default:
+		goto Exit0;
+	}
+
+    for ( i = 0; i < m_nk; i++ )
+    {
+        m_dwSubKey[i] = bytes_to_big_dword(pkey + i * 4);
+    }
+
+    while ( i < (m_nb * (m_nr + 1) ) )
+    {
+        dwtemp = m_dwSubKey[ i - 1 ];
+        if ( i % m_nk == 0 )
+        {
+            dwtemp = dwTe4[ (dwtemp>>16) &0xFF ] & 0xFF00FF00    \
+                    ^ dwTe4[ (dwtemp>>8)  &0xFF ] & 0x00FF00FF   \
+                    ^ dwTe4[ (dwtemp)     &0xFF ] & 0xFF00FF00   \
+                    ^ dwTe4[ (dwtemp>>24) &0xFF ] & 0x00FF00FF   \
+                    ^ RCon[i / m_nk - 1];
+        }
+        else if ( ( m_nk > 6 ) && ( i % m_nk ==  4 ) )
+        {
+            dwtemp = dwTe4[ (dwtemp>>24) &0xFF ] & 0xFF00FF00    \
+                    ^ dwTe4[ (dwtemp>>16)  &0xFF ] & 0x00FF00FF   \
+                    ^ dwTe4[ (dwtemp >> 8)     &0xFF ] & 0xFF00FF00   \
+                    ^ dwTe4[ (dwtemp ) &0xFF ] & 0x00FF00FF   \
+                    ^ RCon[i / m_nk - 1];
+        }
+        m_dwSubKey[i] = m_dwSubKey[ i - m_nk ] ^ dwtemp;
+        i++;
+    }
+Exit0:
+	return bRet;
+}
+
+void FBC_AES::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 {
 	FBC_Dword dwState[4]={0};
 	FBC_Dword dwtemp[4]={0};
@@ -750,7 +813,7 @@ void RIJNDAEL::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 
 	for (i=0;i<4;i++)
 	{
-		dwState[i]=(aes_swap(inBlock[i])^dwSubKey[i]);
+		dwState[i]=(aes_swap(inBlock[i])^m_dwSubKey[i]);
 	}
 	i=5;
 	j=0;
@@ -760,25 +823,25 @@ void RIJNDAEL::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTd1[(dwState[3]>>16) & 0xFF ] \
 			^dwTd2[(dwState[2]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[1])     & 0xFF ] \
-			^dwSubKey[j+4];
+			^m_dwSubKey[j+4];
 
 		dwtemp[1]=dwTd0[dwState[1]>>24]      \
 			^dwTd1[(dwState[0]>>16) & 0xFF ] \
 			^dwTd2[(dwState[3]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[2])     & 0xFF ] \
-			^dwSubKey[j+5];
+			^m_dwSubKey[j+5];
 
 		dwtemp[2]=dwTd0[dwState[2]>>24]      \
 			^dwTd1[(dwState[1]>>16) & 0xFF ] \
 			^dwTd2[(dwState[0]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[3])     & 0xFF ] \
-			^dwSubKey[j+6];
+			^m_dwSubKey[j+6];
 
 		dwtemp[3]=dwTd0[dwState[3]>>24]      \
 			^dwTd1[(dwState[2]>>16) & 0xFF ] \
 			^dwTd2[(dwState[1]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[0])     & 0xFF ] \
-			^dwSubKey[j+7];
+			^m_dwSubKey[j+7];
 		j+=8;
 		i--;
 		if (i!=0)
@@ -787,25 +850,25 @@ void RIJNDAEL::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTd1[(dwtemp[3]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[2]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[1])     & 0xFF ] \
-			^dwSubKey[j];
+			^m_dwSubKey[j];
 			
 			dwState[1]=dwTd0[dwtemp[1]>>24]      \
 			^dwTd1[(dwtemp[0]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[3]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[2])     & 0xFF ] \
-			^dwSubKey[j+1];
+			^m_dwSubKey[j+1];
 			
 			dwState[2]=dwTd0[dwtemp[2]>>24]      \
 			^dwTd1[(dwtemp[1]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[0]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[3])     & 0xFF ] \
-			^dwSubKey[j+2];
+			^m_dwSubKey[j+2];
 			
 			dwState[3]=dwTd0[dwtemp[3]>>24]      \
 			^dwTd1[(dwtemp[2]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[1]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[0])     & 0xFF ] \
-			^dwSubKey[j+3];
+			^m_dwSubKey[j+3];
 		}
 	}
 
@@ -813,32 +876,32 @@ void RIJNDAEL::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 		^(dwTd4[(dwtemp[3]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[2]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[1])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j];
+		^m_dwSubKey[j];
 	outBlock[0]=aes_swap(dwState[0]);
 
 	dwState[1]=(dwTd4[dwtemp[1]>>24] & 0xFF000000)    \
 		^(dwTd4[(dwtemp[0]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[3]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[2])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j+1];
+		^m_dwSubKey[j+1];
 	outBlock[1]=aes_swap(dwState[1]);
 
 	dwState[2]=(dwTd4[dwtemp[2]>>24] & 0xFF000000)    \
 		^(dwTd4[(dwtemp[1]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[0]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[3])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j+2];
+		^m_dwSubKey[j+2];
 	outBlock[2]=aes_swap(dwState[2]);
 
 	dwState[3]=(dwTd4[dwtemp[3]>>24] & 0xFF000000)    \
 		^(dwTd4[(dwtemp[2]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[1]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[0])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j+3];
+		^m_dwSubKey[j+3];
 	outBlock[3]=aes_swap(dwState[3]);
 }
 
-void RIJNDAEL::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
+void FBC_AES::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 {
 	FBC_Dword dwState[4]={0};
 	FBC_Dword dwtemp[4]={0};
@@ -846,7 +909,7 @@ void RIJNDAEL::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 
 	for (i=0;i<4;i++)
 	{
-		dwState[i]=(aes_swap(inBlock[i])^dwSubKey[i]);
+		dwState[i]=(aes_swap(inBlock[i])^m_dwSubKey[i]);
 	}
 	i=5;
 	j=0;
@@ -856,25 +919,25 @@ void RIJNDAEL::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTe1[(dwState[1]>>16) & 0xFF ] \
 			^dwTe2[(dwState[2]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[3])     & 0xFF ] \
-			^dwSubKey[j+4];
+			^m_dwSubKey[j+4];
 
 		dwtemp[1]=dwTe0[dwState[1]>>24]      \
 			^dwTe1[(dwState[2]>>16) & 0xFF ] \
 			^dwTe2[(dwState[3]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[0])     & 0xFF ] \
-			^dwSubKey[j+5];
+			^m_dwSubKey[j+5];
 
 		dwtemp[2]=dwTe0[dwState[2]>>24]      \
 			^dwTe1[(dwState[3]>>16) & 0xFF ] \
 			^dwTe2[(dwState[0]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[1])     & 0xFF ] \
-			^dwSubKey[j+6];
+			^m_dwSubKey[j+6];
 
 		dwtemp[3]=dwTe0[dwState[3]>>24]      \
 			^dwTe1[(dwState[0]>>16) & 0xFF ] \
 			^dwTe2[(dwState[1]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[2])     & 0xFF ] \
-			^dwSubKey[j+7];
+			^m_dwSubKey[j+7];
 		j+=8;
 		i--;
 		if (i!=0)
@@ -883,25 +946,25 @@ void RIJNDAEL::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTe1[(dwtemp[1]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[2]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[3])     & 0xFF ] \
-			^dwSubKey[j];
+			^m_dwSubKey[j];
 			
 			dwState[1]=dwTe0[dwtemp[1]>>24]      \
 			^dwTe1[(dwtemp[2]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[3]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[0])     & 0xFF ] \
-			^dwSubKey[j+1];
+			^m_dwSubKey[j+1];
 			
 			dwState[2]=dwTe0[dwtemp[2]>>24]      \
 			^dwTe1[(dwtemp[3]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[0]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[1])     & 0xFF ] \
-			^dwSubKey[j+2];
+			^m_dwSubKey[j+2];
 			
 			dwState[3]=dwTe0[dwtemp[3]>>24]      \
 			^dwTe1[(dwtemp[0]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[1]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[2])     & 0xFF ] \
-			^dwSubKey[j+3];
+			^m_dwSubKey[j+3];
 		}
 	}
 
@@ -909,28 +972,28 @@ void RIJNDAEL::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 		^(dwTe4[(dwtemp[1]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[2]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[3])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j];
+		^m_dwSubKey[j];
 	outBlock[0]=aes_swap(dwState[0]);
 
 	dwState[1]=(dwTe4[dwtemp[1]>>24] & 0xFF000000)    \
 		^(dwTe4[(dwtemp[2]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[3]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[0])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j+1];
+		^m_dwSubKey[j+1];
 	outBlock[1]=aes_swap(dwState[1]);
 
 	dwState[2]=(dwTe4[dwtemp[2]>>24] & 0xFF000000)    \
 		^(dwTe4[(dwtemp[3]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[0]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[1])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j+2];
+		^m_dwSubKey[j+2];
 	outBlock[2]=aes_swap(dwState[2]);
 
 	dwState[3]=(dwTe4[dwtemp[3]>>24] & 0xFF000000)    \
 		^(dwTe4[(dwtemp[0]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[1]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[2])     & 0xFF ] & 0x000000FF) \
-		^dwSubKey[j+3];
+		^m_dwSubKey[j+3];
 	outBlock[3]=aes_swap(dwState[3]);
 }
 

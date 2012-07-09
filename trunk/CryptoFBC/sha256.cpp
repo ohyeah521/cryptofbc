@@ -134,4 +134,19 @@ void FBC_CLASS_SHA256::Final(FBC_Byte* szHash, int cbBytes)
 	}
 }
 
+void FBC_CLASS_SHA256::Reset()
+{
+	dwLength = 0;
+	dwCurLen = 0;
+
+	dwState[0] = 0x6a09e667;
+	dwState[1] = 0xbb67ae85;
+	dwState[2] = 0x3c6ef372;
+	dwState[3] = 0xa54ff53a;
+	dwState[4] = 0x510e527f;
+	dwState[5] = 0x9b05688c;
+	dwState[6] = 0x1f83d9ab;
+	dwState[7] = 0x5be0cd19;
+}
+
 NAMESPACE_END
