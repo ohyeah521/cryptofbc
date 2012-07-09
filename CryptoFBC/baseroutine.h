@@ -58,6 +58,25 @@ inline void ReverseDword(FBC_Dword& x, FBC_Dword& y)
 	y = z;
 }
 
+#define bytes_to_big_dword(p) ( ( (FBC_Byte)(p)[0] << 24 ) |	\
+								( (FBC_Byte)(p)[1] << 16 ) |	\
+								( (FBC_Byte)(p)[2] << 8  ) |	\
+								( (FBC_Byte)(p)[3] ) )
+
+#define big_dword_to_bytes(x, p) ( (p)[0] = (FBC_Byte)( (x) >> 24 ); \
+                                  (p)[1] = (FBC_Byte)( (x) >> 16 ); \
+                                  (p)[2] = (FBC_Byte)( (x) >> 8  ); \
+                                  (p)[3] = (FBC_Byte)( x ) );                                         
+
+#define bytes_to_little_dword(p) ( *(FBC_Dword*)(p) )
+
+#define little_dword_to_bytes(x, p) ( \
+    FBC_Byte* pu = (FBC_Byte*)&(x);  \
+    (p)[0] = pu[0]; \
+    (p)[1] = pu[1]; \
+    (p)[2] = pu[2]; \
+    (p)[3] = pu[3]; )
+
 struct Padding
 {
 public:

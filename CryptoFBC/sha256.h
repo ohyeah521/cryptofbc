@@ -82,6 +82,10 @@ public:
 
 	void Update(unsigned char* szMessage, int cbBytes);
 	void Final(FBC_Byte* szHash, int cbBytes);
+	void Reset();
+
+#define SHA256_DIGEST_BYTES		32
+
 };
 
 NAMESPACE_END

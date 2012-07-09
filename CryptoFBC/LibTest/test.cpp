@@ -11,7 +11,7 @@
 #include "../idea.h"
 #include "../rc4.h"
 #include "../ModifiedBlowfish.h"
-#include "../rijndael.h"
+#include "../aes.h"
 #include "../base64.h"
 #include "../sha1.h"
 #include "../crc32.h"
@@ -89,16 +89,28 @@ void Test_Base64()
 
 void Test_Rijndael()
 {
-	RIJNDAEL rijndael1;
-	FBC_Dword dwX[4]={0x78563412,0xF1DEBC0A,0x78563412,0xF1DEBC0A};
-	FBC_Dword dwIn[4]={0x89674523,0x78563412,0xF1DEBC0A,0x89674523};
-	FBC_Dword dwTest[4]={0xEE685D4F,0xAC5EB33E,0xABDEACED,0xAFCBAD98};
-	FBC_Dword dwOut[4]={0};
+	//RIJNDAEL rijndael1;
+	//FBC_Dword dwX[4]={0x78563412,0xF1DEBC0A,0x78563412,0xF1DEBC0A};
+	//FBC_Dword dwIn[4]={0x89674523,0x78563412,0xF1DEBC0A,0x89674523};
+	//FBC_Dword dwTest[4]={0xEE685D4F,0xAC5EB33E,0xABDEACED,0xAFCBAD98};
+	//FBC_Dword dwOut[4]={0};
 
-	//rijndael1.SetKey(CIPHERBASE::DECRYPTION,dwX);
-	//rijndael1.ECB_Decryption(dwIn,dwOut);
-	rijndael1.SetKey(CIPHERBASE::ENCRYPTION,dwX);
-	rijndael1.ECB_Encryption(dwTest,dwOut);
+	////rijndael1.SetKey(CIPHERBASE::DECRYPTION,dwX);
+	////rijndael1.ECB_Decryption(dwIn,dwOut);
+	//rijndael1.SetKey(CIPHERBASE::ENCRYPTION,dwX);
+	//rijndael1.ECB_Encryption(dwTest,dwOut);
+}
+
+void Test_AES()
+{
+    FBC_AES aesTest;
+    BYTE p128bitsKey[16] = { 
+        0x2b, 0x7e, 0x15, 0x16, 
+        0x28, 0xae, 0xd2, 0xa6,
+        0xab, 0xf7, 0x15, 0x88, 
+        0x09, 0xcf, 0x4f, 0x3c };
+    
+    aesTest.SetKey( (char*)p128bitsKey, enumKeyBits_128, CIPHERBASE::ENCRYPTION);
 }
 
 void Test_Para()
@@ -483,5 +495,6 @@ void main()
 	//Test_Base32();
 	//Test_Blowfish();
 	//Test_RC5();
-	Test_SHA256();
+	//Test_SHA256();
+    Test_AES();
 }

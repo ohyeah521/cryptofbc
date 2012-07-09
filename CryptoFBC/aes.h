@@ -1,5 +1,5 @@
-#ifndef CryptoFBC_RIJNDAEL_H
-#define CryptoFBC_RIJNDAEL_H
+#ifndef CryptoFBC_AES_H
+#define CryptoFBC_AES_H
 
 #include "cfbconfig.h"
 #include "cipherbase.h"
@@ -7,7 +7,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class RIJNDAEL:public CIPHERBASE
+class FBC_AES:public CIPHERBASE
 {
 	public:
 		static const int BLOCKSIZE;
@@ -27,8 +27,11 @@ class RIJNDAEL:public CIPHERBASE
 		void SetKey(CipherDir dir, const FBC_Dword dwKey[4]);
 		void ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4]);
 		void ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4]);
+
+		bool SetKey(char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir );
+
 	private:
-		FBC_Dword dwSubKey[44];
+		FBC_Dword m_dwSubKey[ 4 * ( 14 + 1 )];
 		static const FBC_Dword dwTe0[256];
 		static const FBC_Dword dwTe1[256];
 		static const FBC_Dword dwTe2[256];
@@ -40,6 +43,9 @@ class RIJNDAEL:public CIPHERBASE
 		static const FBC_Dword dwTd3[256];
 		static const FBC_Dword dwTd4[256];
 		static const FBC_Dword RCon[10];
+		int m_nb;
+		int m_nk;
+		int m_nr;
 };
 
 NAMESPACE_END

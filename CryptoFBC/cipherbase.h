@@ -4,6 +4,14 @@
 #include "cfbconfig.h"
 
 NAMESPACE_BEGIN(CryptoFBC)
+
+typedef enum _tagENUM_KEY_BITS
+{
+	enumKeyBits_128 = 0,
+	enumKeyBits_192,
+	enumKeyBits_256
+} ENUM_KEY_BITS;
+
 //template <class T>
 class CIPHERBASE
 {
