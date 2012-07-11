@@ -744,6 +744,8 @@ void FBC_AES::SetKey(CipherDir dir, const FBC_Dword dwKey[4])
 
 bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir )
 {
+    // this implementation is based on the pseudo code of fips-197 5.2 Key Expansion,
+    // the only optimization is that using of table lookup instead of SubWord and RotWord
 	bool bRet = false;
     int i;
     FBC_Dword dwtemp;
@@ -784,23 +786,24 @@ bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir )
         dwtemp = m_dwSubKey[ i - 1 ];
         if ( i % m_nk == 0 )
         {
-            dwtemp = dwTe4[ (dwtemp>>16) &0xFF ] & 0xFF00FF00    \
-                    ^ dwTe4[ (dwtemp>>8)  &0xFF ] & 0x00FF00FF   \
-                    ^ dwTe4[ (dwtemp)     &0xFF ] & 0xFF00FF00   \
-                    ^ dwTe4[ (dwtemp>>24) &0xFF ] & 0x00FF00FF   \
-                    ^ RCon[i / m_nk - 1];
+            dwtemp = dwTe4[ ( dwtemp >> 16 ) & 0xFF ] & 0xFF000000 ^
+                     dwTe4[ ( dwtemp >> 8  ) & 0xFF ] & 0x00FF0000 ^
+                     dwTe4[ ( dwtemp       ) & 0xFF ] & 0x0000FF00 ^
+                     dwTe4[ ( dwtemp >> 24 ) & 0xFF ] & 0x000000FF ^
+                     RCon[i / m_nk - 1];
         }
         else if ( ( m_nk > 6 ) && ( i % m_nk ==  4 ) )
         {
-            dwtemp = dwTe4[ (dwtemp>>24) &0xFF ] & 0xFF00FF00    \
-                    ^ dwTe4[ (dwtemp>>16)  &0xFF ] & 0x00FF00FF   \
-                    ^ dwTe4[ (dwtemp >> 8)     &0xFF ] & 0xFF00FF00   \
-                    ^ dwTe4[ (dwtemp ) &0xFF ] & 0x00FF00FF   \
-                    ^ RCon[i / m_nk - 1];
+            dwtemp = dwTe4[ ( dwtemp >> 24 ) & 0xFF ] & 0xFF000000 ^   
+                     dwTe4[ ( dwtemp >> 16 ) & 0xFF ] & 0x00FF0000 ^
+                     dwTe4[ ( dwtemp >> 8  ) & 0xFF ] & 0x0000FF00 ^
+                     dwTe4[ ( dwtemp       ) & 0xFF ] & 0x000000FF;                     
         }
         m_dwSubKey[i] = m_dwSubKey[ i - m_nk ] ^ dwtemp;
         i++;
     }
+
+    bRet = true;
 Exit0:
 	return bRet;
 }

@@ -43,9 +43,9 @@ class FBC_AES:public CIPHERBASE
 		static const FBC_Dword dwTd3[256];
 		static const FBC_Dword dwTd4[256];
 		static const FBC_Dword RCon[10];
-		int m_nb;
-		int m_nk;
-		int m_nr;
+		int m_nb;  // number of block
+		int m_nk;  // number of key
+		int m_nr;  // number of round
 };
 
 NAMESPACE_END
