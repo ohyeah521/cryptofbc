@@ -11,6 +11,10 @@ typedef unsigned char FBC_Byte;
 typedef unsigned short FBC_Word;
 typedef unsigned long FBC_Dword;
 
+typedef unsigned char   fbyte;
+typedef unsigned short  fword;
+typedef unsigned long   fdword;
+
 #define ROL(X,n) (((X)<<(n))|((X)>>(32-(n))))
 #define ROR(X,n) (((X)>>(n))|((X)<<(32-(n))))
 
@@ -40,6 +44,7 @@ typedef unsigned long FBC_Dword;
 
 #define FBC_PROCESS_POINTER(p) if ( (p) == NULL ) { goto Exit0; }
 #define FBC_PROCESS_BOOL(b) if ( (b) == false ) { goto Exit0; }
+#define FBC_PROCESS_ERROR(x) { if ( !(x) ) goto Exit0; }
 
 static char cBasePad = '=';
 
@@ -48,6 +53,14 @@ static FBC_Byte PADDING[64] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
+
+typedef int fbc_error_type;
+
+#define fbc_err_success         0
+#define fbc_err_unsuccessful    1
+#define fbc_invalid_parameter   2
+#define fbc_buffer_too_small    3
+#define fbc_key_not_initialize  4
 
 NAMESPACE_END
 

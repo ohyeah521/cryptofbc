@@ -30,6 +30,11 @@ class FBC_AES:public CIPHERBASE
 
 		bool SetKey(char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir );
 
+        fbc_error_type AES_ECB_Encryption(const FBC_Byte* pin,
+                                const int cbInLen,
+                                FBC_Byte* pout,
+                                int* cbOutLen);
+        FBC_AES();
 	private:
 		FBC_Dword m_dwSubKey[ 4 * ( 14 + 1 )];
 		static const FBC_Dword dwTe0[256];
@@ -46,6 +51,7 @@ class FBC_AES:public CIPHERBASE
 		int m_nb;  // number of block
 		int m_nk;  // number of key
 		int m_nr;  // number of round
+        bool m_bKeyInited;
 };
 
 NAMESPACE_END
