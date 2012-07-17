@@ -1149,7 +1149,8 @@ fbc_error_type FBC_AES::AES_ECB_Encryption(
         (dwTe1[(t2      ) & 0xff] & 0x000000ff) ^
         rk[3];
     big_dword_to_bytes(s3, pout + 12);
-
+	
+	*cbOutLen = 16;
     nRet = fbc_err_success;
 Exit0:
     return nRet;

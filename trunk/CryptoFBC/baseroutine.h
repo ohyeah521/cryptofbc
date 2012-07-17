@@ -63,11 +63,14 @@ inline void ReverseDword(FBC_Dword& x, FBC_Dword& y)
 								( (FBC_Byte)(p)[2] << 8  ) |	\
 								( (FBC_Byte)(p)[3] ) )
 
-#define big_dword_to_bytes(x, p) ( 
-do 
+inline void big_dword_to_bytes(__in fdword x, __out fbyte* p)
 {
+	p[0] = (fbyte)( x >> 24);
+	p[1] = (fbyte)( x >> 16);
+	p[2] = (fbyte)( x >>  8);
+	p[3] = (fbyte)( x );
+}
 
-} while (0 );
 /*(p)[0] = (FBC_Byte)( (x) >> 24 ); \
                                   (p)[1] = (FBC_Byte)( (x) >> 16 ); \
                                   (p)[2] = (FBC_Byte)( (x) >> 8  ); \

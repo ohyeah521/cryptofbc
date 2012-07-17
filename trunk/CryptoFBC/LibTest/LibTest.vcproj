@@ -229,14 +229,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\VC98\Include\BASETSD.H"
-				>
-			</File>
-			<File
-				RelativePath="C:\Program Files\Microsoft Visual Studio\VC98\Include\BASETSD.H"
-				>
-			</File>
-			<File
 				RelativePath="..\blowfish.h"
 				>
 			</File>
@@ -282,10 +274,6 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 		</Filter>
-		<File
-			RelativePath="..\Release\CryptoFBC.lib"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
