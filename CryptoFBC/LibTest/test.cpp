@@ -141,14 +141,24 @@ void Test_AES()
         0x30, 0x91, 0xF4, 0x10, 
         0x00, 0x79, 0xDF, 0x66
     };
+	fbyte plain[16] = {
+		0x32, 0x43, 0xf6, 0xa8,
+		0x88, 0x5a, 0x30, 0x8d,
+		0x31, 0x31, 0x98, 0xa2,
+		0xe0, 0x37, 0x07, 0x34
+	};
+	fbyte cipher[16] = { 0 };
+	int cbLen = 16;
 
     aesTest.SetKey( (char*)p128bitsKey, enumKeyBits_128, CIPHERBASE::ENCRYPTION);
 
-    aesTest.SetKey( (char*)p192bitsKey, enumKeyBits_192, CIPHERBASE::ENCRYPTION);
+    //aesTest.SetKey( (char*)p192bitsKey, enumKeyBits_192, CIPHERBASE::ENCRYPTION);
 
-    aesTest.SetKey( (char*)p256bitsKey, enumKeyBits_256, CIPHERBASE::ENCRYPTION);
+    //aesTest.SetKey( (char*)p256bitsKey, enumKeyBits_256, CIPHERBASE::ENCRYPTION);
 
-    aesTest.SetKey( (char*)p256bitsKeyWinHex, enumKeyBits_256, CIPHERBASE::ENCRYPTION);
+    //aesTest.SetKey( (char*)p256bitsKeyWinHex, enumKeyBits_256, CIPHERBASE::ENCRYPTION);
+
+	aesTest.AES_ECB_Encryption( plain, 16, cipher, &cbLen );
 }
 
 void Test_Para()
