@@ -682,6 +682,11 @@ const FBC_Dword FBC_AES::RCon[10]={
 	0x1B000000, 0x36000000
 };
 
+FBC_AES::FBC_AES()
+{
+    m_bKeyInited = false;
+}
+
 void FBC_AES::SetKey(CipherDir dir, const FBC_Dword dwKey[4])
 {
 	FBC_Dword dwTemp=0;
@@ -803,6 +808,7 @@ bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir )
         i++;
     }
 
+    m_bKeyInited = true;
     bRet = true;
 Exit0:
 	return bRet;
@@ -998,6 +1004,155 @@ void FBC_AES::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 		^(dwTe4[(dwtemp[2])     & 0xFF ] & 0x000000FF) \
 		^m_dwSubKey[j+3];
 	outBlock[3]=aes_swap(dwState[3]);
+}
+
+fbc_error_type FBC_AES::AES_ECB_Encryption( 
+                                  const FBC_Byte* pin, 
+                                  const int cbInLen, 
+                                  FBC_Byte* pout, 
+                                  int* cbOutLen )
+{
+    fbc_error_type nRet = fbc_err_unsuccessful;
+    fdword s0, s1, s2, s3, t0, t1, t2, t3;
+    int r;
+    fdword* rk = m_dwSubKey;
+
+    if ( !m_bKeyInited )
+    {
+        nRet = fbc_key_not_initialize;
+        goto Exit0;
+    }
+
+    if ( !pin || !cbOutLen )
+    {
+        nRet = fbc_invalid_parameter;
+        goto Exit0;
+    }
+
+    if ( cbInLen < 16 )
+    {
+        nRet = fbc_buffer_too_small;
+        goto Exit0;
+    }
+
+    if ( *cbOutLen < 16 )
+    {
+        if ( pout )
+        {
+            nRet = fbc_invalid_parameter;
+        }
+        else
+        {
+            nRet = fbc_buffer_too_small;
+        }     
+        *cbOutLen = 16;
+        goto Exit0;
+    }
+
+    /*
+	 * map byte array block to cipher state
+	 * and add initial round key:
+	 */
+    s0 = bytes_to_big_dword(pin     ) ^ rk[0];
+    s1 = bytes_to_big_dword(pin +  4) ^ rk[1];
+    s2 = bytes_to_big_dword(pin +  8) ^ rk[2];
+    s3 = bytes_to_big_dword(pin + 12) ^ rk[3];
+
+    r = m_nr >> 1;
+
+    for ( ; ; )
+    {
+        t0 = 
+            dwTe0[(s0 >> 24)        ] ^
+            dwTe1[(s1 >> 16) & 0xff ] ^
+            dwTe2[(s2 >>  8) & 0xff ] ^
+            dwTe3[(s3      ) & 0xff ] ^
+            rk[4];
+        t1 =
+            dwTe0[(s1 >> 24)       ] ^
+            dwTe1[(s2 >> 16) & 0xff] ^
+            dwTe2[(s3 >>  8) & 0xff] ^
+            dwTe3[(s0      ) & 0xff] ^
+            rk[5];
+        t2 =
+            dwTe0[(s2 >> 24)       ] ^
+            dwTe1[(s3 >> 16) & 0xff] ^
+            dwTe2[(s0 >>  8) & 0xff] ^
+            dwTe3[(s1      ) & 0xff] ^
+            rk[6];
+        t3 =
+            dwTe0[(s3 >> 24)       ] ^
+            dwTe1[(s0 >> 16) & 0xff] ^
+            dwTe2[(s1 >>  8) & 0xff] ^
+            dwTe3[(s2      ) & 0xff] ^
+            rk[7];
+
+        rk += 8;
+        if (--r == 0) {
+            break;
+        }
+
+        s0 =
+            dwTe0[(t0 >> 24)       ] ^
+            dwTe1[(t1 >> 16) & 0xff] ^
+            dwTe2[(t2 >>  8) & 0xff] ^
+            dwTe3[(t3      ) & 0xff] ^
+            rk[0];
+        s1 =
+            dwTe0[(t1 >> 24)       ] ^
+            dwTe1[(t2 >> 16) & 0xff] ^
+            dwTe2[(t3 >>  8) & 0xff] ^
+            dwTe3[(t0      ) & 0xff] ^
+            rk[1];
+        s2 =
+            dwTe0[(t2 >> 24)       ] ^
+            dwTe1[(t3 >> 16) & 0xff] ^
+            dwTe2[(t0 >>  8) & 0xff] ^
+            dwTe3[(t1      ) & 0xff] ^
+            rk[2];
+        s3 =
+            dwTe0[(t3 >> 24)       ] ^
+            dwTe1[(t0 >> 16) & 0xff] ^
+            dwTe2[(t1 >>  8) & 0xff] ^
+            dwTe3[(t2      ) & 0xff] ^
+            rk[3];
+    }
+    
+    s0 =
+        (dwTe2[(t0 >> 24)       ] & 0xff000000) ^
+        (dwTe3[(t1 >> 16) & 0xff] & 0x00ff0000) ^
+        (dwTe0[(t2 >>  8) & 0xff] & 0x0000ff00) ^
+        (dwTe1[(t3      ) & 0xff] & 0x000000ff) ^
+        rk[0];
+    big_dword_to_bytes(s0, pout);
+
+    s1 =
+        (dwTe2[(t1 >> 24)       ] & 0xff000000) ^
+        (dwTe3[(t2 >> 16) & 0xff] & 0x00ff0000) ^
+        (dwTe0[(t3 >>  8) & 0xff] & 0x0000ff00) ^
+        (dwTe1[(t0      ) & 0xff] & 0x000000ff) ^
+        rk[1];
+    big_dword_to_bytes(s1, pout + 4);
+
+    s2 =
+        (dwTe2[(t2 >> 24)       ] & 0xff000000) ^
+        (dwTe3[(t3 >> 16) & 0xff] & 0x00ff0000) ^
+        (dwTe0[(t0 >>  8) & 0xff] & 0x0000ff00) ^
+        (dwTe1[(t1      ) & 0xff] & 0x000000ff) ^
+        rk[2];
+    big_dword_to_bytes(s2, pout + 8);
+
+    s3 =
+        (dwTe2[(t3 >> 24)       ] & 0xff000000) ^
+        (dwTe3[(t0 >> 16) & 0xff] & 0x00ff0000) ^
+        (dwTe0[(t1 >>  8) & 0xff] & 0x0000ff00) ^
+        (dwTe1[(t2      ) & 0xff] & 0x000000ff) ^
+        rk[3];
+    big_dword_to_bytes(s3, pout + 12);
+
+    nRet = fbc_err_success;
+Exit0:
+    return nRet;
 }
 
 NAMESPACE_END
