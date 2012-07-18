@@ -28,15 +28,22 @@ class FBC_AES:public CIPHERBASE
 		void ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4]);
 		void ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4]);
 
-		bool SetKey(char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir );
+		bool SetKey(char* pkey, ENUM_KEY_BITS keyBits);
 
         fbc_error_type AES_ECB_Encryption(const FBC_Byte* pin,
                                 const int cbInLen,
                                 FBC_Byte* pout,
                                 int* cbOutLen);
+
+		fbc_error_type AES_ECB_Decryption(	const fbyte* pin,
+											const int cbInLen,
+											fbyte* pout,
+											int* cbOutLen);
+
         FBC_AES();
 	private:
-		FBC_Dword m_dwSubKey[ 4 * ( 14 + 1 )];
+		FBC_Dword m_dwEnSubKey[ 4 * ( 14 + 1 ) ];
+        fdword m_dwDeSubKey[ 4 * ( 14 + 1 ) ];
 		static const FBC_Dword dwTe0[256];
 		static const FBC_Dword dwTe1[256];
 		static const FBC_Dword dwTe2[256];
