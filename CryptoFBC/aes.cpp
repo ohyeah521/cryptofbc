@@ -692,68 +692,71 @@ void FBC_AES::SetKey(CipherDir dir, const FBC_Dword dwKey[4])
 	FBC_Dword dwTemp=0;
 	int i=0,j=0;
 
-	m_dwSubKey[0]=(aes_swap(dwKey[0])^aes_swap(dwKey[3]));
-	m_dwSubKey[1]=(aes_swap(dwKey[1])^aes_swap(dwKey[2]));
-	m_dwSubKey[2]=(aes_swap(dwKey[2])^aes_swap(dwKey[1]));
-	m_dwSubKey[3]=(aes_swap(dwKey[3])^aes_swap(dwKey[0]));
+	m_dwEnSubKey[0]=(aes_swap(dwKey[0])^aes_swap(dwKey[3]));
+	m_dwEnSubKey[1]=(aes_swap(dwKey[1])^aes_swap(dwKey[2]));
+	m_dwEnSubKey[2]=(aes_swap(dwKey[2])^aes_swap(dwKey[1]));
+	m_dwEnSubKey[3]=(aes_swap(dwKey[3])^aes_swap(dwKey[0]));
 
 	for(i=4;i<44;i+=4)
 	{
-		dwTemp=m_dwSubKey[i-1];
-		m_dwSubKey[i]=m_dwSubKey[i-4]                       \
+		dwTemp=m_dwEnSubKey[i-1];
+		m_dwEnSubKey[i]=m_dwEnSubKey[i-4]                       \
 			^dwTe4[ (dwTemp>>16) &0xFF ] & 0xFF00FF00   \
 			^dwTe4[ (dwTemp>>8)  &0xFF ] & 0x00FF00FF   \
 			^dwTe4[ (dwTemp)     &0xFF ] & 0xFF00FF00   \
 			^dwTe4[ (dwTemp>>24) &0xFF ] & 0x00FF00FF   \
 			^RCon[i/4-1];
-		m_dwSubKey[i+1]=m_dwSubKey[ i ]^m_dwSubKey[i-3];
-		m_dwSubKey[i+2]=m_dwSubKey[i+1]^m_dwSubKey[i-2];
-		m_dwSubKey[i+3]=m_dwSubKey[i+2]^m_dwSubKey[i-1];
+		m_dwEnSubKey[i+1]=m_dwEnSubKey[ i ]^m_dwEnSubKey[i-3];
+		m_dwEnSubKey[i+2]=m_dwEnSubKey[i+1]^m_dwEnSubKey[i-2];
+		m_dwEnSubKey[i+3]=m_dwEnSubKey[i+2]^m_dwEnSubKey[i-1];
 	}
 
 	if (dir==DECRYPTION)
 	{
 		for (j=40,i=0;i!=j;i+=4,j-=4)
 		{
-			swap(m_dwSubKey[i],m_dwSubKey[j]);
-			swap(m_dwSubKey[i+1],m_dwSubKey[j+1]);
-			swap(m_dwSubKey[i+2],m_dwSubKey[j+2]);
-			swap(m_dwSubKey[i+3],m_dwSubKey[j+3]);
+			swap(m_dwEnSubKey[i],m_dwEnSubKey[j]);
+			swap(m_dwEnSubKey[i+1],m_dwEnSubKey[j+1]);
+			swap(m_dwEnSubKey[i+2],m_dwEnSubKey[j+2]);
+			swap(m_dwEnSubKey[i+3],m_dwEnSubKey[j+3]);
 		}
 		
 		for (i=4;i<40;i+=4)
 		{
-			m_dwSubKey[i]=\
-				dwTd0[dwTe4[(m_dwSubKey[i]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(m_dwSubKey[i]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(m_dwSubKey[i]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(m_dwSubKey[i]    ) & 0xFF] & 0xFF ];
-			m_dwSubKey[i+1]=\
-				dwTd0[dwTe4[(m_dwSubKey[i+1]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(m_dwSubKey[i+1]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(m_dwSubKey[i+1]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(m_dwSubKey[i+1]    ) & 0xFF] & 0xFF ];
-			m_dwSubKey[i+2]=\
-				dwTd0[dwTe4[(m_dwSubKey[i+2]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(m_dwSubKey[i+2]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(m_dwSubKey[i+2]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(m_dwSubKey[i+2]    ) & 0xFF] & 0xFF ];
-			m_dwSubKey[i+3]=\
-				dwTd0[dwTe4[(m_dwSubKey[i+3]>>24)       ] & 0xFF ] \
-				^dwTd1[dwTe4[(m_dwSubKey[i+3]>>16) & 0xFF] & 0xFF ] \
-				^dwTd2[dwTe4[(m_dwSubKey[i+3]>>8 ) & 0xFF] & 0xFF ] \
-				^dwTd3[dwTe4[(m_dwSubKey[i+3]    ) & 0xFF] & 0xFF ];
+			m_dwEnSubKey[i]=\
+				dwTd0[dwTe4[(m_dwEnSubKey[i]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwEnSubKey[i]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwEnSubKey[i]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwEnSubKey[i]    ) & 0xFF] & 0xFF ];
+			m_dwEnSubKey[i+1]=\
+				dwTd0[dwTe4[(m_dwEnSubKey[i+1]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwEnSubKey[i+1]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwEnSubKey[i+1]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwEnSubKey[i+1]    ) & 0xFF] & 0xFF ];
+			m_dwEnSubKey[i+2]=\
+				dwTd0[dwTe4[(m_dwEnSubKey[i+2]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwEnSubKey[i+2]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwEnSubKey[i+2]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwEnSubKey[i+2]    ) & 0xFF] & 0xFF ];
+			m_dwEnSubKey[i+3]=\
+				dwTd0[dwTe4[(m_dwEnSubKey[i+3]>>24)       ] & 0xFF ] \
+				^dwTd1[dwTe4[(m_dwEnSubKey[i+3]>>16) & 0xFF] & 0xFF ] \
+				^dwTd2[dwTe4[(m_dwEnSubKey[i+3]>>8 ) & 0xFF] & 0xFF ] \
+				^dwTd3[dwTe4[(m_dwEnSubKey[i+3]    ) & 0xFF] & 0xFF ];
 		}
 	}
 }
 
-bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir )
+bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits )
 {
     // this implementation is based on the pseudo code of fips-197 5.2 Key Expansion,
     // the only optimization is that using of table lookup instead of SubWord and RotWord
 	bool bRet = false;
     int i;
+    int j;
     FBC_Dword dwtemp;
+    fdword* erk = m_dwEnSubKey;
+    fdword* drk = m_dwDeSubKey;
 
 	if ( !pkey )
 	{
@@ -780,15 +783,16 @@ bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir )
 	default:
 		goto Exit0;
 	}
-
+    
+    // set encryption round keys
     for ( i = 0; i < m_nk; i++ )
     {
-        m_dwSubKey[i] = bytes_to_big_dword(pkey + i * 4);
+        erk[i] = bytes_to_big_dword(pkey + i * 4);
     }
 
     while ( i < (m_nb * (m_nr + 1) ) )
     {
-        dwtemp = m_dwSubKey[ i - 1 ];
+        dwtemp = erk[ i - 1 ];
         if ( i % m_nk == 0 )
         {
             dwtemp = dwTe4[ ( dwtemp >> 16 ) & 0xFF ] & 0xFF000000 ^
@@ -804,8 +808,48 @@ bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits, CipherDir dir )
                      dwTe4[ ( dwtemp >> 8  ) & 0xFF ] & 0x0000FF00 ^
                      dwTe4[ ( dwtemp       ) & 0xFF ] & 0x000000FF;                     
         }
-        m_dwSubKey[i] = m_dwSubKey[ i - m_nk ] ^ dwtemp;
+        erk[i] = erk[ i - m_nk ] ^ dwtemp;
         i++;
+    }
+
+    /* set decryption round keys
+    ** first copy encryption round keys to decryption
+    ** and inverse the order
+    */
+    for ( i = 0, j = 4 * m_nr; i < j; i += 4, j -= 4 )
+    {
+        drk[i    ] = erk[j];
+        drk[i + 1] = erk[j + 1];
+        drk[i + 2] = erk[j + 2];
+        drk[i + 3] = erk[j + 3];
+    }
+    
+    /* apply InvMixColumn to keys except for the first and the last 
+    ** round keys
+    */
+    for ( i = 1; i < m_nr; i++ )
+    {
+        drk += 4;
+        drk[0] =
+            dwTd0[dwTe1[(drk[0] >> 24)       ] & 0xff] ^
+            dwTd1[dwTe1[(drk[0] >> 16) & 0xff] & 0xff] ^
+            dwTd2[dwTe1[(drk[0] >>  8) & 0xff] & 0xff] ^
+            dwTd3[dwTe1[(drk[0]      ) & 0xff] & 0xff];
+        drk[1] =
+            dwTd0[dwTe1[(drk[1] >> 24)       ] & 0xff] ^
+            dwTd1[dwTe1[(drk[1] >> 16) & 0xff] & 0xff] ^
+            dwTd2[dwTe1[(drk[1] >>  8) & 0xff] & 0xff] ^
+            dwTd3[dwTe1[(drk[1]      ) & 0xff] & 0xff];
+        drk[2] =
+            dwTd0[dwTe1[(drk[2] >> 24)       ] & 0xff] ^
+            dwTd1[dwTe1[(drk[2] >> 16) & 0xff] & 0xff] ^
+            dwTd2[dwTe1[(drk[2] >>  8) & 0xff] & 0xff] ^
+            dwTd3[dwTe1[(drk[2]      ) & 0xff] & 0xff];
+        drk[3] =
+            dwTd0[dwTe1[(drk[3] >> 24)       ] & 0xff] ^
+            dwTd1[dwTe1[(drk[3] >> 16) & 0xff] & 0xff] ^
+            dwTd2[dwTe1[(drk[3] >>  8) & 0xff] & 0xff] ^
+            dwTd3[dwTe1[(drk[3]      ) & 0xff] & 0xff];
     }
 
     m_bKeyInited = true;
@@ -822,7 +866,7 @@ void FBC_AES::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 
 	for (i=0;i<4;i++)
 	{
-		dwState[i]=(aes_swap(inBlock[i])^m_dwSubKey[i]);
+		dwState[i]=(aes_swap(inBlock[i])^m_dwEnSubKey[i]);
 	}
 	i=5;
 	j=0;
@@ -832,25 +876,25 @@ void FBC_AES::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTd1[(dwState[3]>>16) & 0xFF ] \
 			^dwTd2[(dwState[2]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[1])     & 0xFF ] \
-			^m_dwSubKey[j+4];
+			^m_dwEnSubKey[j+4];
 
 		dwtemp[1]=dwTd0[dwState[1]>>24]      \
 			^dwTd1[(dwState[0]>>16) & 0xFF ] \
 			^dwTd2[(dwState[3]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[2])     & 0xFF ] \
-			^m_dwSubKey[j+5];
+			^m_dwEnSubKey[j+5];
 
 		dwtemp[2]=dwTd0[dwState[2]>>24]      \
 			^dwTd1[(dwState[1]>>16) & 0xFF ] \
 			^dwTd2[(dwState[0]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[3])     & 0xFF ] \
-			^m_dwSubKey[j+6];
+			^m_dwEnSubKey[j+6];
 
 		dwtemp[3]=dwTd0[dwState[3]>>24]      \
 			^dwTd1[(dwState[2]>>16) & 0xFF ] \
 			^dwTd2[(dwState[1]>>8)  & 0xFF ] \
 			^dwTd3[(dwState[0])     & 0xFF ] \
-			^m_dwSubKey[j+7];
+			^m_dwEnSubKey[j+7];
 		j+=8;
 		i--;
 		if (i!=0)
@@ -859,25 +903,25 @@ void FBC_AES::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTd1[(dwtemp[3]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[2]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[1])     & 0xFF ] \
-			^m_dwSubKey[j];
+			^m_dwEnSubKey[j];
 			
 			dwState[1]=dwTd0[dwtemp[1]>>24]      \
 			^dwTd1[(dwtemp[0]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[3]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[2])     & 0xFF ] \
-			^m_dwSubKey[j+1];
+			^m_dwEnSubKey[j+1];
 			
 			dwState[2]=dwTd0[dwtemp[2]>>24]      \
 			^dwTd1[(dwtemp[1]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[0]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[3])     & 0xFF ] \
-			^m_dwSubKey[j+2];
+			^m_dwEnSubKey[j+2];
 			
 			dwState[3]=dwTd0[dwtemp[3]>>24]      \
 			^dwTd1[(dwtemp[2]>>16) & 0xFF ] \
 			^dwTd2[(dwtemp[1]>>8)  & 0xFF ] \
 			^dwTd3[(dwtemp[0])     & 0xFF ] \
-			^m_dwSubKey[j+3];
+			^m_dwEnSubKey[j+3];
 		}
 	}
 
@@ -885,28 +929,28 @@ void FBC_AES::ECB_Decryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 		^(dwTd4[(dwtemp[3]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[2]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[1])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j];
+		^m_dwEnSubKey[j];
 	outBlock[0]=aes_swap(dwState[0]);
 
 	dwState[1]=(dwTd4[dwtemp[1]>>24] & 0xFF000000)    \
 		^(dwTd4[(dwtemp[0]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[3]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[2])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j+1];
+		^m_dwEnSubKey[j+1];
 	outBlock[1]=aes_swap(dwState[1]);
 
 	dwState[2]=(dwTd4[dwtemp[2]>>24] & 0xFF000000)    \
 		^(dwTd4[(dwtemp[1]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[0]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[3])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j+2];
+		^m_dwEnSubKey[j+2];
 	outBlock[2]=aes_swap(dwState[2]);
 
 	dwState[3]=(dwTd4[dwtemp[3]>>24] & 0xFF000000)    \
 		^(dwTd4[(dwtemp[2]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTd4[(dwtemp[1]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTd4[(dwtemp[0])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j+3];
+		^m_dwEnSubKey[j+3];
 	outBlock[3]=aes_swap(dwState[3]);
 }
 
@@ -918,7 +962,7 @@ void FBC_AES::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 
 	for (i=0;i<4;i++)
 	{
-		dwState[i]=(aes_swap(inBlock[i])^m_dwSubKey[i]);
+		dwState[i]=(aes_swap(inBlock[i])^m_dwEnSubKey[i]);
 	}
 	i=5;
 	j=0;
@@ -928,25 +972,25 @@ void FBC_AES::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTe1[(dwState[1]>>16) & 0xFF ] \
 			^dwTe2[(dwState[2]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[3])     & 0xFF ] \
-			^m_dwSubKey[j+4];
+			^m_dwEnSubKey[j+4];
 
 		dwtemp[1]=dwTe0[dwState[1]>>24]      \
 			^dwTe1[(dwState[2]>>16) & 0xFF ] \
 			^dwTe2[(dwState[3]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[0])     & 0xFF ] \
-			^m_dwSubKey[j+5];
+			^m_dwEnSubKey[j+5];
 
 		dwtemp[2]=dwTe0[dwState[2]>>24]      \
 			^dwTe1[(dwState[3]>>16) & 0xFF ] \
 			^dwTe2[(dwState[0]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[1])     & 0xFF ] \
-			^m_dwSubKey[j+6];
+			^m_dwEnSubKey[j+6];
 
 		dwtemp[3]=dwTe0[dwState[3]>>24]      \
 			^dwTe1[(dwState[0]>>16) & 0xFF ] \
 			^dwTe2[(dwState[1]>>8)  & 0xFF ] \
 			^dwTe3[(dwState[2])     & 0xFF ] \
-			^m_dwSubKey[j+7];
+			^m_dwEnSubKey[j+7];
 		j+=8;
 		i--;
 		if (i!=0)
@@ -955,25 +999,25 @@ void FBC_AES::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 			^dwTe1[(dwtemp[1]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[2]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[3])     & 0xFF ] \
-			^m_dwSubKey[j];
+			^m_dwEnSubKey[j];
 			
 			dwState[1]=dwTe0[dwtemp[1]>>24]      \
 			^dwTe1[(dwtemp[2]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[3]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[0])     & 0xFF ] \
-			^m_dwSubKey[j+1];
+			^m_dwEnSubKey[j+1];
 			
 			dwState[2]=dwTe0[dwtemp[2]>>24]      \
 			^dwTe1[(dwtemp[3]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[0]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[1])     & 0xFF ] \
-			^m_dwSubKey[j+2];
+			^m_dwEnSubKey[j+2];
 			
 			dwState[3]=dwTe0[dwtemp[3]>>24]      \
 			^dwTe1[(dwtemp[0]>>16) & 0xFF ] \
 			^dwTe2[(dwtemp[1]>>8)  & 0xFF ] \
 			^dwTe3[(dwtemp[2])     & 0xFF ] \
-			^m_dwSubKey[j+3];
+			^m_dwEnSubKey[j+3];
 		}
 	}
 
@@ -981,28 +1025,28 @@ void FBC_AES::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 		^(dwTe4[(dwtemp[1]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[2]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[3])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j];
+		^m_dwEnSubKey[j];
 	outBlock[0]=aes_swap(dwState[0]);
 
 	dwState[1]=(dwTe4[dwtemp[1]>>24] & 0xFF000000)    \
 		^(dwTe4[(dwtemp[2]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[3]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[0])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j+1];
+		^m_dwEnSubKey[j+1];
 	outBlock[1]=aes_swap(dwState[1]);
 
 	dwState[2]=(dwTe4[dwtemp[2]>>24] & 0xFF000000)    \
 		^(dwTe4[(dwtemp[3]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[0]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[1])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j+2];
+		^m_dwEnSubKey[j+2];
 	outBlock[2]=aes_swap(dwState[2]);
 
 	dwState[3]=(dwTe4[dwtemp[3]>>24] & 0xFF000000)    \
 		^(dwTe4[(dwtemp[0]>>16) & 0xFF ] & 0x00FF0000) \
 		^(dwTe4[(dwtemp[1]>>8)  & 0xFF ] & 0x0000FF00) \
 		^(dwTe4[(dwtemp[2])     & 0xFF ] & 0x000000FF) \
-		^m_dwSubKey[j+3];
+		^m_dwEnSubKey[j+3];
 	outBlock[3]=aes_swap(dwState[3]);
 }
 
@@ -1015,7 +1059,7 @@ fbc_error_type FBC_AES::AES_ECB_Encryption(
     fbc_error_type nRet = fbc_err_unsuccessful;
     fdword s0, s1, s2, s3, t0, t1, t2, t3;
     int r;
-    fdword* rk = m_dwSubKey;
+    fdword* rk = m_dwEnSubKey;
 
     if ( !m_bKeyInited )
     {
@@ -1147,6 +1191,152 @@ fbc_error_type FBC_AES::AES_ECB_Encryption(
         (dwTe3[(t0 >> 16) & 0xff] & 0x00ff0000) ^
         (dwTe0[(t1 >>  8) & 0xff] & 0x0000ff00) ^
         (dwTe1[(t2      ) & 0xff] & 0x000000ff) ^
+        rk[3];
+    big_dword_to_bytes(s3, pout + 12);
+	
+	*cbOutLen = 16;
+    nRet = fbc_err_success;
+Exit0:
+    return nRet;
+}
+
+CryptoFBC::fbc_error_type FBC_AES::AES_ECB_Decryption( const fbyte* pin, 
+													  const int cbInLen, 
+													  fbyte* pout, 
+													  int* cbOutLen )
+{
+    fbc_error_type nRet = fbc_err_unsuccessful;
+    fdword s0, s1, s2, s3, t0, t1, t2, t3;
+    int r;
+    fdword* rk = m_dwDeSubKey;
+
+    if ( !m_bKeyInited )
+    {
+        nRet = fbc_key_not_initialize;
+        goto Exit0;
+    }
+
+    if ( !pin || !cbOutLen )
+    {
+        nRet = fbc_invalid_parameter;
+        goto Exit0;
+    }
+
+    if ( cbInLen < 16 )
+    {
+        nRet = fbc_buffer_too_small;
+        goto Exit0;
+    }
+
+    if ( *cbOutLen < 16 )
+    {
+        if ( pout )
+        {
+            nRet = fbc_invalid_parameter;
+        }
+        else
+        {
+            nRet = fbc_buffer_too_small;
+        }     
+        *cbOutLen = 16;
+        goto Exit0;
+    }
+
+    /*
+	 * map byte array block to cipher state
+	 * and add initial round key:
+	 */
+    s0 = bytes_to_big_dword(pin     ) ^ rk[0];
+    s1 = bytes_to_big_dword(pin +  4) ^ rk[1];
+    s2 = bytes_to_big_dword(pin +  8) ^ rk[2];
+    s3 = bytes_to_big_dword(pin + 12) ^ rk[3];
+
+    r = m_nr >> 1;
+
+    for ( ; ; )
+    {
+        t0 =
+            dwTd0[(s0 >> 24)       ] ^
+            dwTd1[(s3 >> 16) & 0xff] ^
+            dwTd2[(s2 >>  8) & 0xff] ^
+            dwTd3[(s1      ) & 0xff] ^
+            rk[4];
+        t1 =
+            dwTd0[(s1 >> 24)       ] ^
+            dwTd1[(s0 >> 16) & 0xff] ^
+            dwTd2[(s3 >>  8) & 0xff] ^
+            dwTd3[(s2      ) & 0xff] ^
+            rk[5];
+        t2 =
+            dwTd0[(s2 >> 24)       ] ^
+            dwTd1[(s1 >> 16) & 0xff] ^
+            dwTd2[(s0 >>  8) & 0xff] ^
+            dwTd3[(s3      ) & 0xff] ^
+            rk[6];
+        t3 =
+            dwTd0[(s3 >> 24)       ] ^
+            dwTd1[(s2 >> 16) & 0xff] ^
+            dwTd2[(s1 >>  8) & 0xff] ^
+            dwTd3[(s0      ) & 0xff] ^
+            rk[7];
+
+        rk += 8;
+        if (--r == 0) {
+            break;
+        }
+
+        s0 =
+            dwTd0[(t0 >> 24)       ] ^
+            dwTd1[(t3 >> 16) & 0xff] ^
+            dwTd2[(t2 >>  8) & 0xff] ^
+            dwTd3[(t1      ) & 0xff] ^
+            rk[0];
+        s1 =
+            dwTd0[(t1 >> 24)       ] ^
+            dwTd1[(t0 >> 16) & 0xff] ^
+            dwTd2[(t3 >>  8) & 0xff] ^
+            dwTd3[(t2      ) & 0xff] ^
+            rk[1];
+        s2 =
+            dwTd0[(t2 >> 24)       ] ^
+            dwTd1[(t1 >> 16) & 0xff] ^
+            dwTd2[(t0 >>  8) & 0xff] ^
+            dwTd3[(t3      ) & 0xff] ^
+            rk[2];
+        s3 =
+            dwTd0[(t3 >> 24)       ] ^
+            dwTd1[(t2 >> 16) & 0xff] ^
+            dwTd2[(t1 >>  8) & 0xff] ^
+            dwTd3[(t0      ) & 0xff] ^
+            rk[3];
+    }
+    
+    s0 =
+        (dwTd4[(t0 >> 24)       ] << 24) ^
+        (dwTd4[(t3 >> 16) & 0xff] << 16) ^
+        (dwTd4[(t2 >>  8) & 0xff] <<  8) ^
+        (dwTd4[(t1      ) & 0xff])       ^
+        rk[0];
+    big_dword_to_bytes(s0, pout);
+    s1 =
+        (dwTd4[(t1 >> 24)       ] << 24) ^
+        (dwTd4[(t0 >> 16) & 0xff] << 16) ^
+        (dwTd4[(t3 >>  8) & 0xff] <<  8) ^
+        (dwTd4[(t2      ) & 0xff])       ^
+        rk[1];
+    big_dword_to_bytes(s1, pout + 4);
+    s2 =
+        (dwTd4[(t2 >> 24)       ] << 24) ^
+        (dwTd4[(t1 >> 16) & 0xff] << 16) ^
+        (dwTd4[(t0 >>  8) & 0xff] <<  8) ^
+        (dwTd4[(t3      ) & 0xff])       ^
+        rk[2];
+    big_dword_to_bytes(s2, pout + 8);
+    s3 =
+        (dwTd4[(t3 >> 24)       ] << 24) ^
+        (dwTd4[(t2 >> 16) & 0xff] << 16) ^
+        (dwTd4[(t1 >>  8) & 0xff] <<  8) ^
+        (dwTd4[(t0      ) & 0xff])       ^
         rk[3];
     big_dword_to_bytes(s3, pout + 12);
 	

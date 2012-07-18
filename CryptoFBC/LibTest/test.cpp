@@ -121,7 +121,7 @@ void Test_AES()
         0x52, 0x2c, 0x6b, 0x7b
     };
     FBC_Byte p256bitsKey[32] = {
-        // this 256-bit key if from fips-197 A.3
+        // this 256-bit key is from fips-197 A.3
         0x60, 0x3d, 0xeb, 0x10,
         0x15, 0xca, 0x71, 0xbe,
         0x2b, 0x73, 0xae, 0xf0, 
@@ -141,24 +141,41 @@ void Test_AES()
         0x30, 0x91, 0xF4, 0x10, 
         0x00, 0x79, 0xDF, 0x66
     };
-	fbyte plain[16] = {
-		0x32, 0x43, 0xf6, 0xa8,
-		0x88, 0x5a, 0x30, 0x8d,
-		0x31, 0x31, 0x98, 0xa2,
-		0xe0, 0x37, 0x07, 0x34
-	};
+	//fbyte plain[16] = {
+	//	0x32, 0x43, 0xf6, 0xa8,
+	//	0x88, 0x5a, 0x30, 0x8d,
+	//	0x31, 0x31, 0x98, 0xa2,
+	//	0xe0, 0x37, 0x07, 0x34
+	//};
+    fbyte plain[16] = {
+        0x00, 0x11, 0x22, 0x33,
+        0x44, 0x55, 0x66, 0x77,
+        0x88, 0x99, 0xaa, 0xbb,
+        0xcc, 0xdd, 0xee, 0xff
+    };
 	fbyte cipher[16] = { 0 };
 	int cbLen = 16;
+    fbyte ptemp[16] = { 0 };
+    fbyte paes128key[16] = {
+        // this 128 bit keys is from fips-197 C.1
+        0x00, 0x01, 0x02, 0x03,
+        0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b,
+        0x0c, 0x0d, 0x0e, 0x0f
+    };
+    
+    //aesTest.SetKey( (char*)p128bitsKey, enumKeyBits_128 );
 
-    aesTest.SetKey( (char*)p128bitsKey, enumKeyBits_128, CIPHERBASE::ENCRYPTION);
+    //aesTest.SetKey( (char*)p192bitsKey, enumKeyBits_192 );
 
-    //aesTest.SetKey( (char*)p192bitsKey, enumKeyBits_192, CIPHERBASE::ENCRYPTION);
+    //aesTest.SetKey( (char*)p256bitsKey, enumKeyBits_256 );
 
-    //aesTest.SetKey( (char*)p256bitsKey, enumKeyBits_256, CIPHERBASE::ENCRYPTION);
-
-    //aesTest.SetKey( (char*)p256bitsKeyWinHex, enumKeyBits_256, CIPHERBASE::ENCRYPTION);
+    //aesTest.SetKey( (char*)p256bitsKeyWinHex, enumKeyBits_256 );
+    
+    aesTest.SetKey( (char*)paes128key, enumKeyBits_128 );
 
 	aesTest.AES_ECB_Encryption( plain, 16, cipher, &cbLen );
+    aesTest.AES_ECB_Decryption( cipher, 16, ptemp, &cbLen );
 }
 
 void Test_Para()
