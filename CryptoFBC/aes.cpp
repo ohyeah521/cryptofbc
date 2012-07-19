@@ -816,7 +816,8 @@ bool FBC_AES::SetKey( char* pkey, ENUM_KEY_BITS keyBits )
     ** first copy encryption round keys to decryption
     ** and inverse the order
     */
-    for ( i = 0, j = 4 * m_nr; i < j; i += 4, j -= 4 )
+
+    for ( i = 0, j = 4 * m_nr; j >= 0; i += 4, j -= 4 )
     {
         drk[i    ] = erk[j];
         drk[i + 1] = erk[j + 1];
@@ -1312,31 +1313,31 @@ CryptoFBC::fbc_error_type FBC_AES::AES_ECB_Decryption( const fbyte* pin,
     }
     
     s0 =
-        (dwTd4[(t0 >> 24)       ] << 24) ^
-        (dwTd4[(t3 >> 16) & 0xff] << 16) ^
-        (dwTd4[(t2 >>  8) & 0xff] <<  8) ^
-        (dwTd4[(t1      ) & 0xff])       ^
+        (dwTd4[(t0 >> 24)       ] & 0xff000000 ) ^
+        (dwTd4[(t3 >> 16) & 0xff] & 0x00ff0000 ) ^
+        (dwTd4[(t2 >>  8) & 0xff] & 0x0000ff00 ) ^
+        (dwTd4[(t1      ) & 0xff] & 0x000000ff ) ^
         rk[0];
     big_dword_to_bytes(s0, pout);
     s1 =
-        (dwTd4[(t1 >> 24)       ] << 24) ^
-        (dwTd4[(t0 >> 16) & 0xff] << 16) ^
-        (dwTd4[(t3 >>  8) & 0xff] <<  8) ^
-        (dwTd4[(t2      ) & 0xff])       ^
+        (dwTd4[(t1 >> 24)       ] & 0xff000000 ) ^
+        (dwTd4[(t0 >> 16) & 0xff] & 0x00ff0000 ) ^
+        (dwTd4[(t3 >>  8) & 0xff] & 0x0000ff00 ) ^
+        (dwTd4[(t2      ) & 0xff] & 0x000000ff ) ^
         rk[1];
     big_dword_to_bytes(s1, pout + 4);
     s2 =
-        (dwTd4[(t2 >> 24)       ] << 24) ^
-        (dwTd4[(t1 >> 16) & 0xff] << 16) ^
-        (dwTd4[(t0 >>  8) & 0xff] <<  8) ^
-        (dwTd4[(t3      ) & 0xff])       ^
+        (dwTd4[(t2 >> 24)       ] & 0xff000000 ) ^
+        (dwTd4[(t1 >> 16) & 0xff] & 0x00ff0000 ) ^
+        (dwTd4[(t0 >>  8) & 0xff] & 0x0000ff00 ) ^
+        (dwTd4[(t3      ) & 0xff] & 0x000000ff ) ^
         rk[2];
     big_dword_to_bytes(s2, pout + 8);
     s3 =
-        (dwTd4[(t3 >> 24)       ] << 24) ^
-        (dwTd4[(t2 >> 16) & 0xff] << 16) ^
-        (dwTd4[(t1 >>  8) & 0xff] <<  8) ^
-        (dwTd4[(t0      ) & 0xff])       ^
+        (dwTd4[(t3 >> 24)       ] & 0xff000000 ) ^
+        (dwTd4[(t2 >> 16) & 0xff] & 0x00ff0000 ) ^
+        (dwTd4[(t1 >>  8) & 0xff] & 0x0000ff00 ) ^
+        (dwTd4[(t0      ) & 0xff] & 0x000000ff ) ^
         rk[3];
     big_dword_to_bytes(s3, pout + 12);
 	

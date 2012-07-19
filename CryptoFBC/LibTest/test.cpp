@@ -156,14 +156,17 @@ void Test_AES()
 	fbyte cipher[16] = { 0 };
 	int cbLen = 16;
     fbyte ptemp[16] = { 0 };
-    fbyte paes128key[16] = {
+    fbyte pAesTestKey[] = {
         // this 128 bit keys is from fips-197 C.1
         0x00, 0x01, 0x02, 0x03,
         0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0a, 0x0b,
-        0x0c, 0x0d, 0x0e, 0x0f
+        0x0c, 0x0d, 0x0e, 0x0f,
+        0x10, 0x11, 0x12, 0x13,
+        0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1a, 0x1b,
+        0x1c, 0x1d, 0x1e, 0x1f
     };
-    
     //aesTest.SetKey( (char*)p128bitsKey, enumKeyBits_128 );
 
     //aesTest.SetKey( (char*)p192bitsKey, enumKeyBits_192 );
@@ -172,7 +175,9 @@ void Test_AES()
 
     //aesTest.SetKey( (char*)p256bitsKeyWinHex, enumKeyBits_256 );
     
-    aesTest.SetKey( (char*)paes128key, enumKeyBits_128 );
+    aesTest.SetKey( (char*)pAesTestKey, enumKeyBits_128 );
+    aesTest.SetKey( (char*)pAesTestKey, enumKeyBits_192 );
+    aesTest.SetKey( (char*)pAesTestKey, enumKeyBits_256 );
 
 	aesTest.AES_ECB_Encryption( plain, 16, cipher, &cbLen );
     aesTest.AES_ECB_Decryption( cipher, 16, ptemp, &cbLen );
