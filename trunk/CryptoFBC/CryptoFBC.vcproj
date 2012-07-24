@@ -275,6 +275,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\cipherbase.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\crc16.cpp"
 				>
 			</File>
