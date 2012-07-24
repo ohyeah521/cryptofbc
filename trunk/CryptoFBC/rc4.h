@@ -6,7 +6,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-struct RC4:public CIPHERBASE
+struct RC4:public CIPHERBASE<RC4>
 {
 	private:
 		FBC_Byte RC4_X;

@@ -7,7 +7,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class MODIFYBLOWFISH:public CIPHERBASE//<DWORD>
+class MODIFYBLOWFISH:public CIPHERBASE<MODIFYBLOWFISH>//<DWORD>
 {
 	private:
 		/* PBOX_init & SBOX_init store the initial PI values */

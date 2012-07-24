@@ -10,7 +10,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class TWOFISH:public CIPHERBASE
+class TWOFISH:public CIPHERBASE<TWOFISH>
 {
 	public:
 		static const int BLOCKSIZE;

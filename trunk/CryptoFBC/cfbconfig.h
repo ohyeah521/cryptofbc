@@ -61,6 +61,8 @@ typedef int fbc_error_type;
 #define fbc_invalid_parameter   2
 #define fbc_buffer_too_small    3
 #define fbc_key_not_initialize  4
+#define fbc_no_cipher_object    5
+#define fbc_set_key_fail        6
 
 NAMESPACE_END
 

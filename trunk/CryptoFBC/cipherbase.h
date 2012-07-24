@@ -30,18 +30,41 @@ public:
     CIPHERBASE();
     ~CIPHERBASE();
 
-	//virtual void ECB_Encryption(const T inblock[2],T outblock[2])=0;
-
     virtual bool SetKey(char* pkey, ENUM_KEY_BITS keyBits);
+
+    virtual void ECB_Encryption(const T inblock[2],T outblock[2])=0;
+
+    virtual fbc_error_type ECB_Encryption( const fbyte* pin,
+                                           const int cbInLen,
+                                           fbyte* pout,
+                                           int* cbOutLen);
+
+    virtual fbc_error_type ECB_Decryption(	const fbyte* pin,
+                                            const int cbInLen,
+                                            fbyte* pout,
+                                            int* cbOutLen);
 
     fbc_error_type Init( ENUM_CIPHER_MODES modes,
                          char* pInitialVector,
                          int nIvLength,
                          char* pkey,
                          ENUM_KEY_BITS keyBits);
-public:
+
+    fbc_error_type Encrypt( fbyte* pin,
+                            int nInLen,
+                            fbyte* pout,
+                            int* nOutLen);
+
+    fbc_error_type Decrypt( fbyte* pin,
+                            int nInLen,
+                            fbyte* pout,
+                            int* nOutLen);
+
+private:
     bool m_bInited;
     CIPHERBASE* m_pCipherObject;
+    char m_InitialVector[16];
+    ENUM_CIPHER_MODES m_CipherMode;
 };
 
 NAMESPACE_END
