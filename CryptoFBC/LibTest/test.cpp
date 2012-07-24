@@ -181,6 +181,11 @@ void Test_AES()
 
 	aesTest.AES_ECB_Encryption( plain, 16, cipher, &cbLen );
     aesTest.AES_ECB_Decryption( cipher, 16, ptemp, &cbLen );
+
+    for ( int i = 0, j = 40; i < j; i += 4, j -= 4 )
+    {
+        std::cout << "i = " << i << ", j = " << j << endl;
+    }
 }
 
 void Test_Para()
