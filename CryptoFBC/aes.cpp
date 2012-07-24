@@ -1051,7 +1051,7 @@ void FBC_AES::ECB_Encryption(const FBC_Dword inBlock[4], FBC_Dword outBlock[4])
 	outBlock[3]=aes_swap(dwState[3]);
 }
 
-fbc_error_type FBC_AES::AES_ECB_Encryption( 
+fbc_error_type FBC_AES::ECB_Encryption( 
                                   const FBC_Byte* pin, 
                                   const int cbInLen, 
                                   FBC_Byte* pout, 
@@ -1201,10 +1201,10 @@ Exit0:
     return nRet;
 }
 
-CryptoFBC::fbc_error_type FBC_AES::AES_ECB_Decryption( const fbyte* pin, 
-													  const int cbInLen, 
-													  fbyte* pout, 
-													  int* cbOutLen )
+CryptoFBC::fbc_error_type FBC_AES::ECB_Decryption( const fbyte* pin, 
+												   const int cbInLen, 
+												   fbyte* pout, 
+												   int* cbOutLen )
 {
     fbc_error_type nRet = fbc_err_unsuccessful;
     fdword s0, s1, s2, s3, t0, t1, t2, t3;

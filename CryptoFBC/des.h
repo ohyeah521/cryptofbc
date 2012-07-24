@@ -7,7 +7,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class DES:public CIPHERBASE,public Padding,public BytesAndBits
+class DES:public CIPHERBASE<DES>,public Padding,public BytesAndBits
 {
 	private:
 		/* Initial Permutation Table */

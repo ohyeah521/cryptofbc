@@ -7,7 +7,8 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class BLOWFISH:public CIPHERBASE//<DWORD>
+//template <class T>
+class BLOWFISH:public CIPHERBASE<BLOWFISH>//<DWORD>
 {
 	private:
 		/* PBOX_init & SBOX_init store the initial PI values */

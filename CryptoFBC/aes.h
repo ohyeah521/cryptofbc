@@ -7,7 +7,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class FBC_AES:public CIPHERBASE
+class FBC_AES:public CIPHERBASE<FBC_AES>
 {
 	public:
 		static const int BLOCKSIZE;
@@ -30,15 +30,15 @@ class FBC_AES:public CIPHERBASE
 
 		bool SetKey(char* pkey, ENUM_KEY_BITS keyBits);
 
-        fbc_error_type AES_ECB_Encryption(const FBC_Byte* pin,
-                                const int cbInLen,
-                                FBC_Byte* pout,
-                                int* cbOutLen);
+        fbc_error_type ECB_Encryption( const FBC_Byte* pin,
+                                       const int cbInLen,
+                                       FBC_Byte* pout,
+                                       int* cbOutLen);
 
-		fbc_error_type AES_ECB_Decryption(	const fbyte* pin,
-											const int cbInLen,
-											fbyte* pout,
-											int* cbOutLen);
+		fbc_error_type ECB_Decryption(	const fbyte* pin,
+										const int cbInLen,
+										fbyte* pout,
+										int* cbOutLen);
 
         FBC_AES();
 	private:
