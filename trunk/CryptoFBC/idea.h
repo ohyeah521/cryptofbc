@@ -7,7 +7,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class IDEA:public CIPHERBASE<IDEA>
+class IDEA
 {
 	public:
 		static const int BLOCKSIZE;

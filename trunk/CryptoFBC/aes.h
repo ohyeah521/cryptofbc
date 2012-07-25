@@ -7,7 +7,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-class FBC_AES:public CIPHERBASE<FBC_AES>
+class FBC_AES
 {
 	public:
 		static const int BLOCKSIZE;

@@ -103,7 +103,8 @@ using namespace CryptoFBC;
 
 void Test_AES()
 {
-    CIPHERBASE<FBC_AES> aesTest;
+    FBC_AES aesTest;
+    CIPHERBASE<FBC_AES> aesClass;
     BYTE p128bitsKey[16] = { 
         // this 128-bit key is from fips-197 A.1
         0x2b, 0x7e, 0x15, 0x16, 
@@ -167,6 +168,27 @@ void Test_AES()
         0x18, 0x19, 0x1a, 0x1b,
         0x1c, 0x1d, 0x1e, 0x1f
     };
+    fbyte cbcplain[] = {
+        0x6b, 0xc1, 0xbe, 0xe2,
+        0x2e, 0x40, 0x9f, 0x96,
+        0xe9, 0x3d, 0x7e, 0x11,
+        0x73, 0x93, 0x17, 0x2a,
+        0xae, 0x2d, 0x8a, 0x57,
+        0x1e, 0x03, 0xac, 0x9c,
+        0x9e, 0xb7, 0x6f, 0xac,
+        0x45, 0xaf, 0x8e, 0x51,
+        0x30, 0xC8, 0x1C, 0x46, 
+        0xA3, 0x5C, 0xE4, 0x11, 
+        0xE5, 0xFB, 0xC1, 0x19, 
+        0x1A, 0x0A, 0x52, 0xEF,
+        0xF6, 0x9F, 0x24, 0x45, 
+        0xDF, 0x4F, 0x9B, 0x17, 
+        0xAD, 0x2B, 0x41, 0x7B, 
+        0xE6, 0x6C, 0x37, 0x10
+    };
+    fbyte cbccipher[ sizeof(cbcplain) ] = { 0 };
+    fbyte cbctemp[ sizeof(cbccipher) ] = { 0 };
+
     //aesTest.SetKey( (char*)p128bitsKey, enumKeyBits_128 );
 
     //aesTest.SetKey( (char*)p192bitsKey, enumKeyBits_192 );
@@ -186,6 +208,23 @@ void Test_AES()
     {
         std::cout << "i = " << i << ", j = " << j << endl;
     }
+
+    aesClass.Init(  enumMode_CBC, 
+                    (char*)pAesTestKey, 
+                    16, 
+                    (char*)p128bitsKey, 
+                    enumKeyBits_128 );
+
+    cbLen = sizeof(cbccipher);
+    aesClass.Encrypt( cbcplain, 
+                      sizeof(cbcplain), 
+                      cbccipher, 
+                      &cbLen );
+
+    aesClass.Decrypt( cbccipher,
+                      sizeof(cbccipher),
+                      cbctemp,
+                      &cbLen );
 }
 
 //void Test_Para()
