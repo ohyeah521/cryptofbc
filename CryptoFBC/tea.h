@@ -6,7 +6,7 @@
 
 NAMESPACE_BEGIN(CryptoFBC)
 
-struct TEA:public CIPHERBASE<TEA>
+struct TEA
 {
 	public:
 		static const int BLOCKSIZE;
