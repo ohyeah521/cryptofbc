@@ -32,7 +32,7 @@ public:
 
     virtual bool SetKey(char* pkey, ENUM_KEY_BITS keyBits);
 
-    virtual void ECB_Encryption(const T inblock[2],T outblock[2])=0;
+    //virtual void ECB_Encryption(const T inblock[2],T outblock[2])=0;
 
     virtual fbc_error_type ECB_Encryption( const fbyte* pin,
                                            const int cbInLen,
