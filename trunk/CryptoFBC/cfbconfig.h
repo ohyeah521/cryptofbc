@@ -30,10 +30,6 @@ typedef unsigned long   fdword;
 #define TRUE 1
 #endif
 
-#ifndef BOOL
-#define BOOL long
-#endif
-
 #ifndef __in
 #define __in
 #endif
