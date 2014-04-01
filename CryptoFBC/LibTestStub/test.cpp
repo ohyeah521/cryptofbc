@@ -18,6 +18,7 @@
 #include "../src/base32.h"
 #include "../src/rc5.h"
 #include "../src/sha256.h"
+#include "../src/sha3.h"
 
 using namespace std;
 using namespace CryptoFBC;
@@ -28,6 +29,14 @@ using namespace CryptoFBC;
 #pragma comment(lib, "Debug/cryptofbcvc8D.lib")
 #else
 #pragma comment(lib, "Release/cryptofbcvc8.lib")
+#endif
+
+#elif _MSC_VER == 1500
+
+#ifdef _DEBUG
+#pragma comment(lib, "Debug/cryptofbcvc9D.lib")
+#else
+#pragma comment(lib, "Release/cryptofbcvc9.lib")
 #endif
 
 #endif
@@ -778,6 +787,214 @@ void CalcMD5Performance()
     delete[] p;
 }
 
+void Test_SHA3_256()
+{
+    char* pMessage = "The quick brown fox jumps over the lazy dog.";
+    fbyte pHashVal[32];
+    char* pMessage2 = "724627916C50338643E6996F07877EAFD96BDF01DA7E991D4155B9BE1295EA7D21C9391F4C4A";
+    char* pMessage3 = "41C75F77E5D27389253393725F1427F57914B273AB862B9E31DABCE506E558720520D33352D119F699E784F9E548FF91BC35CA147042128709820D69A8287EA3257857615EB0321270E94B84F446942765CE882B191FAEE7E1C87E0F0BD4E0CD8A927703524B559B769CA4ECE1F6DBF313FDCF67C572EC4185C1A88E86EC11B6454B371980020F19633B6B95BD280E4FBCB0161E1A82470320CEC6ECFA25AC73D09F1536F286D3F9DACAFB2CD1D0CE72D64D197F5C7520B3CCB2FD74EB72664BA93853EF41EABF52F015DD591500D018DD162815CC993595B195";
+    char* pMessage4 = "724627916C50338643E6996F07877EAFD96BDF01DA7E991D4155B9BE1295EA7D21C9391F4C4A41C75F77E5D27389253393725F1427F57914B273AB862B9E31DABCE506E558720520D33352D119F699E784F9E548FF91BC35CA147042128709820D69A8287EA3257857615EB0321270E94B84F446942765CE882B191FAEE7E1C87E0F0BD4E0CD8A927703524B559B769CA4ECE1F6DBF313FDCF67C572EC4185C1A88E86EC11B6454B371980020F19633B6B95BD280E4FBCB0161E1A82470320CEC6ECFA25AC73D09F1536F286D3F9DACAFB2CD1D0CE72D64D197F5C7520B3CCB2FD74EB72664BA93853EF41EABF52F015DD591500D018DD162815CC993595B195";
+    FBC_SHA3 sha3Inst(256);
+
+    //sha3Inst.Update( (fbyte*)pMessage2, strlen(pMessage2) * 8);
+    //sha3Inst.Update( (fbyte*)pMessage3, strlen(pMessage3) * 8);
+    //sha3Inst.Update( (fbyte*)pMessage4, strlen(pMessage4) * 8);
+    sha3Inst.Update( (fbyte*)pMessage4, 2048);
+    sha3Inst.Final(pHashVal);
+
+    char szHash[65] = { 0 };
+
+    for ( int i = 0; i < 32; i++ )
+    {
+        sprintf_s(szHash + i * 2, 3, "%02x", pHashVal[i]);
+    }
+
+    cout << szHash << endl;
+}
+
+#define MAX_MARKER_LEN      50
+
+typedef unsigned char BitSequence;
+
+int FindMarker(FILE *infile, const char *marker);
+int FindMarker(FILE *infile, const char *marker)
+{
+    char    line[MAX_MARKER_LEN];
+    int     i, len;
+
+    len = (int)strlen(marker);
+    if ( len > MAX_MARKER_LEN-1 )
+        len = MAX_MARKER_LEN-1;
+
+    for ( i=0; i<len; i++ )
+        if ( (line[i] = fgetc(infile)) == EOF )
+            return 0;
+    line[len] = '\0';
+
+    while ( 1 ) {
+        if ( !strncmp(line, marker, len) )
+            return 1;
+
+        for ( i=0; i<len-1; i++ )
+            line[i] = line[i+1];
+        if ( (line[len-1] = fgetc(infile)) == EOF )
+            return 0;
+        line[len] = '\0';
+    }
+
+    // shouldn't get here
+    return 0;
+}
+
+//
+// ALLOW TO READ HEXADECIMAL ENTRY (KEYS, DATA, TEXT, etc.)
+//
+int ReadHex(FILE *infile, BitSequence *A, int Length, char *str);
+int ReadHex(FILE *infile, BitSequence *A, int Length, char *str)
+{
+    int         i, ch, started;
+    BitSequence ich;
+
+    if ( Length == 0 ) {
+        A[0] = 0x00;
+        return 1;
+    }
+    memset(A, 0x00, Length);
+    started = 0;
+    i = 0;
+    if ( FindMarker(infile, str) )
+        while ( (ch = fgetc(infile)) != EOF ) 
+        {
+            if ( !isxdigit(ch) ) {
+                if ( !started ) {
+                    if ( ch == '\n' )
+                        break;
+                    else
+                        continue;
+                }
+                else
+                    break;
+            }
+            started = 1;
+            if ( (ch >= '0') && (ch <= '9') )
+                ich = ch - '0';
+            else if ( (ch >= 'A') && (ch <= 'F') )
+                ich = ch - 'A' + 10;
+            else if ( (ch >= 'a') && (ch <= 'f') )
+                ich = ch - 'a' + 10;
+
+            A[i / 2] = (A[i / 2] << 4) | ich;
+            if ( (++i / 2) == Length )
+                break;
+        }
+    else
+        return 0;
+
+    return 1;
+}
+
+#define cKeccakB    1600
+#define cKeccakR    1088
+#define cKeccakFixedOutputLengthInBytes 32
+#define cKeccakR_SizeInBytes    (cKeccakR / 8)
+
+const char* testVectorFile = "F:\\keccak\\KeccakKAT\\ShortMsgKAT_256.txt";
+//const char* testVectorFile = "F:\\keccak\\KeccakKAT\\LongMsgKAT_256.txt";
+
+#define    cKeccakMaxMessageSizeInBytes    (2048/8)
+
+unsigned char input[cKeccakMaxMessageSizeInBytes];
+unsigned char output[cKeccakR_SizeInBytes];
+
+int crypto_hash(fbyte* pout, fbyte* pin, unsigned __int64 inLen)
+{
+    FBC_SHA3 sha3Inst(256);
+
+    sha3Inst.Update(pin, inLen * 8);
+    sha3Inst.Final(pout);
+
+    return 0;
+}
+
+int SHA3TestVector()
+{
+    unsigned long long    inlen;
+    int                    result = 0;
+    FILE                *fp_in;
+    char                marker[20];
+    int                    refLen;
+
+    refLen = cKeccakFixedOutputLengthInBytes;
+
+    printf( "Testing Keccak[r=%u, c=%u] against %s over %d squeezed bytes\n", cKeccakR, cKeccakB - cKeccakR, testVectorFile, refLen );
+    if ( (fp_in = fopen(testVectorFile, "r")) == NULL ) 
+    {
+        printf("Couldn't open <%s> for read\n", testVectorFile);
+        return 1;
+    }
+
+    for ( inlen = 0; inlen <= cKeccakMaxMessageSizeInBytes; ++inlen )
+    {
+        sprintf( marker, "Len = %u", inlen * 8 );
+        printf("Len = %u\n", inlen * 8);
+        if ( !FindMarker(fp_in, marker) )
+        {
+            printf("ERROR: no test vector found (%u bytes)\n", inlen );
+            result = 1;
+            break;
+        }
+        if ( !ReadHex(fp_in, input, (int)inlen, "Msg = ") ) 
+        {
+            printf("ERROR: unable to read 'Msg' (%u bytes)\n", inlen );
+            result = 1;
+            break;
+        }
+
+        result = crypto_hash( output, input, inlen );
+        if ( result != 0 )
+        {
+            printf("ERROR: crypto_hash() (%u bytes)\n", inlen);
+            result = 1;
+            break;
+        }
+
+#ifdef cKeccakFixedOutputLengthInBytes
+        if ( !ReadHex(fp_in, input, refLen, "MD = ") )
+#else
+        if ( !ReadHex(fp_in, input, refLen, "Squeezed = ") )
+#endif
+        {
+            printf("ERROR: unable to read 'Squeezed/MD' (%u bytes)\n", inlen );
+            result = 1;
+            break;
+        }
+        if ( memcmp( output, input, refLen ) != 0) 
+        {
+            printf("ERROR: hash verification (%u bytes)\n", inlen );
+            for(result=0; result<refLen; result++)
+                printf("%02X ", output[result]);
+            printf("\n");
+            result = 1;
+            break;
+        }
+        else
+        {
+            for(result=0; result<refLen; result++)
+                printf("%02X ", output[result]);
+            printf("\n");
+        }
+    }
+
+    fclose( fp_in );
+    if ( !result )
+        printf( "\nSuccess!\n");
+
+    printf( "\nPress a key ...");
+    getchar();
+    printf( "\n");
+    return ( result );
+}
+
 void main()
 {
 	//Test_GF256();
@@ -802,5 +1019,7 @@ void main()
 
     //cout << _MSC_VER << endl;
     //CalcSha256Performance();
-    CalcMD5Performance();
+    //CalcMD5Performance();
+    Test_SHA3_256();
+    SHA3TestVector();
 }

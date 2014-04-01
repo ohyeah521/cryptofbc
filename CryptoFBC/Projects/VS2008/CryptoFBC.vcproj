@@ -223,6 +223,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\sha3.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\sms4.cpp"
 				>
 			</File>
@@ -318,6 +322,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\sha256.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\sha3.h"
 				>
 			</File>
 			<File
