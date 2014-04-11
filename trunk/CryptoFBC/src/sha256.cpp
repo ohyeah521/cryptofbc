@@ -101,7 +101,7 @@ void FBC_CLASS_SHA256::Final(FBC_Byte* szHash, int cbBytes)
 
 	cBuffer[ dwCurLen++ ] = 0x80;
 
-	if ( dwCurLen >= 56 )
+	if ( dwCurLen > 56 )
 	{
 		while( dwCurLen < 64 )
 		{
